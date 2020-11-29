@@ -4,7 +4,7 @@
     - key: https://download.docker.com/linux/ubuntu/gpg
       repository: deb https://download.docker.com/linux/ubuntu lsb_release stable
     git_private_key: '{{ lookup(''file'', ''git_private_key'') }}'
-    git_infrastructure_url: 
+    git_infrastructure_url: git@github.com:belenot/infrastructure.git
     packages:
     - apt-transport-https
     - ca-certificates
@@ -67,10 +67,10 @@
     become: yes
 
   - name: Install git private key.
-    copy: 'content={{ git_private_key }} dest=''~/.ssh/id_rsa'''
+    copy: 'content={{ git_private_key }} dest=''~/.ssh/id_rsa'' mode=''600'''
 
   - name: Fetch infrastructure git repository.
-    git: 'repo={{ git_infrastructure_url }} dest=~/infrastructure'
-
-    
-    
+    git:
+      repo: '{{ git_infrastructure_url }}'
+      dest: ~/infrastructure
+      force: no
