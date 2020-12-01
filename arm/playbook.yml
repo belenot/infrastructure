@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: all
   vars:
     apt_repositories:
     - key: https://download.docker.com/linux/ubuntu/gpg
