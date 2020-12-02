@@ -4,3 +4,4 @@
 password
 .vagrant
 *.log
+/kubernetes/kubernetes-setup/join-command
