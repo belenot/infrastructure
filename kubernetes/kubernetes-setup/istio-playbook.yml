@@ -1,0 +1,13 @@
+- hosts: all
+  become: true
+  tasks:
+
+  - name: Download istio release.
+    become: false
+    shell: 'curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.8.0 sh - '
+
+  - name: Install istio.
+    command:
+      cmd: './istioctl install --set profile=demo -y'
+      chdir: istio-1.8.0/bin
+    become: false
