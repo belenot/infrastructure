@@ -2,5 +2,6 @@
 - name: Copy the join command to server location
   copy: 
     src: join-command/k8s-master/join-command 
-    dest: /tmp/join-command.sh mode=0777
+    dest: join-command.sh 
+    mode: '0777'
   notify: join the node to cluster

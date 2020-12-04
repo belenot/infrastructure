@@ -3,4 +3,4 @@
   service: name=docker state=started
 
 - name: join the node to cluster
-  command: sh /tmp/join-command.sh
+  command: sh join-command.sh
