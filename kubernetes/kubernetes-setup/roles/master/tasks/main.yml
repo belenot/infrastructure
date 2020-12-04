@@ -1,0 +1,62 @@
+---
+- name: Check kubernetes wasn't initialized.
+  shell: kubectl cluster-info
+  register: output
+  ignore_errors: yes
+  changed_when: false
+  become: false
+
+- name: Initialize the Kubernetes cluster using kubeadm
+  command: >- 
+    kubeadm init --apiserver-advertise-address="{{ node_ip }}" 
+    --apiserver-cert-extra-sans="{{ node_ip }}" 
+    --pod-network-cidr=172.16.0.0/16
+  when: '"is running at" not in output.stdout'
+  notify: 
+  - generate join command
+  - fetch join command
+  - fetch admin kubeconfig
+    
+- name: Create kube directory
+  file:
+    path: '/home/{{ ansible_user }}/.kube'
+    state: directory
+
+- name: 'Setup kubeconfig for {{ ansible_user }} user'
+  copy: 
+    remote_src: yes
+    src: /etc/kubernetes/admin.conf
+    dest: '/home/{{ ansible_user }}/.kube/config'
+
+- name: 'Change owner of kubeconfig for {{ ansible_user }} user'
+  file:
+    path: '/home/{{ ansible_user }}/.kube/config'
+    owner: '{{ ansible_user }}'
+    group: '{{ ansible_user }}'
+
+- name: Download foo.conf
+  get_url:
+    url: https://docs.projectcalico.org/v3.15/manifests/calico.yaml
+    dest: '/home/{{ ansible_user }}/calico.yaml'
+
+- name: Add pod config to calico.yaml
+  lineinfile:
+    dest: '/home/{{ ansible_user }}/calico.yaml'
+    regexp: '^\s{12}#\s*- name: CALICO_IPV4POOL_CIDR.*$'
+    line: '            - name: CALICO_IPV4POOL_CIDR'
+
+- name: Add pod config to calico.yaml
+  lineinfile:
+    dest: '/home/{{ ansible_user }}/calico.yaml'
+    regexp: '^\s{12}#\s*  value: "192.168.0.0\/16".*$'
+    line: '              value: "172.16.0.0/16"'
+
+- name: Apply calico CNI
+  command: kubectl apply -f calico.yaml
+  become: no
+  register: output
+  changed_when: >- 
+    output.stdout_lines | 
+    reject('match', '^customresourcedefinition.apiextensions.k8s.io.*configured$') | 
+    reject('match', 'daemonset.apps/calico-node configured') |
+    select('match', '^.*(configured|created)$') | length > 0

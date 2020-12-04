@@ -1,0 +1,94 @@
+---
+- name: Install packages that allow apt to be used over HTTPS
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common 
+    - gnupg2
+    - net-tools
+
+- name: Add an apt signing key for Docker
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add apt repository for stable version
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+    state: present
+
+- name: Install docker and its dependecies
+  apt: 
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - containerd.io=1.2.13-2
+    - docker-ce=5:19.03.11~3-0~ubuntu-xenial
+    - docker-ce-cli=5:19.03.11~3-0~ubuntu-xenial
+  notify:
+    - docker status
+
+- name: 'Add {{ ansible_user }} user to docker group'
+  user:
+    name: '{{ ansible_user }}'
+    group: docker
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Add an apt signing key for Kubernetes
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Adding apt repository for Kubernetes
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes.list
+
+- name: Install Kubernetes binaries
+  apt: 
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - kubelet=1.18.0-00
+      - kubeadm=1.18.0-00
+      - kubectl=1.18.0-00
+
+- name: Configure kubelet
+  lineinfile:
+    line: 'Environment="KUBELET_EXTRA_ARGS=--node-ip={{ node_ip }}"'
+    path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+- name: Disable IP tables
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: yes
+
+- name: Enable forwarding.
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes

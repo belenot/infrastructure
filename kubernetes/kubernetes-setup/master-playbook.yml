@@ -2,6 +2,7 @@
 - hosts: all
   become: true
   tasks:
+
   - name: Install packages that allow apt to be used over HTTPS
     apt:
       name: "{{ packages }}"
@@ -39,9 +40,9 @@
     notify:
       - docker status
 
-  - name: Add vagrant user to docker group
+  - name: 'Add {{ ansible_user }} user to docker group'
     user:
-      name: vagrant
+      name: '{{ ansible_user }}'
       group: docker
 
   - name: Remove swapfile from /etc/fstab
@@ -79,62 +80,95 @@
         - kubeadm=1.18.0-00
         - kubectl=1.18.0-00
 
-  - name: Get IP eth1 addr
-    shell: ifconfig eth1 | grep 'inet' | cut -d{{':'}} -f2 | awk '{ print $2 }'
-    register: output
-
   - name: Configure kubelet
-    shell: echo 'Environment="KUBELET_EXTRA_ARGS=--node-ip={{ output.stdout }}"' >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    lineinfile:
+      line: 'Environment="KUBELET_EXTRA_ARGS=--node-ip={{ node_ip }}"'
+      path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+  - name: Check kubernetes wasn't initialized.
+    shell: kubectl cluster-info
+    register: output
+    ignore_errors: yes
+    changed_when: false
+    become: false
 
   - name: Initialize the Kubernetes cluster using kubeadm
-    command: kubeadm init --apiserver-advertise-address="192.168.50.10" --apiserver-cert-extra-sans="192.168.50.10" --pod-network-cidr=172.16.0.0/16
+    command: >- 
+      kubeadm init --apiserver-advertise-address="{{ node_ip }}" 
+      --apiserver-cert-extra-sans="{{ node_ip }}" 
+      --pod-network-cidr=172.16.0.0/16
+    when: '"is running at" not in output.stdout'
+    notify: 
+    - generate join command
+    - fetch join command
+    - fetch admin kubeconfig
+      
 
   - name: Create kube directory
     file:
-      path: /home/vagrant/.kube
+      path: '/home/{{ ansible_user }}/.kube'
       state: directory
-    
-  - name: Setup kubeconfig for vagrant user
-    command: "{{ item }}"
-    with_items:
-     - cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
-     - chown vagrant:vagrant /home/vagrant/.kube/config
+
+  - name: 'Setup kubeconfig for {{ ansible_user }} user'
+    copy: 
+      remote_src: yes
+      src: /etc/kubernetes/admin.conf
+      dest: '/home/{{ ansible_user }}/.kube/config'
+
+  - name: 'Change owner of kubeconfig for {{ ansible_user }} user'
+    file:
+      path: '/home/{{ ansible_user }}/.kube/config'
+      owner: '{{ ansible_user }}'
+      group: '{{ ansible_user }}'
 
   - name: Disable IP tables
-    shell: |
-      echo "net.bridge.bridge-nf-call-iptables=1" >> /etc/sysctl.conf
-      echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-      sysctl -p
+    sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: '1'
+      sysctl_set: yes
+
+  - name: Enable forwarding.
+    sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      sysctl_set: yes
 
   - name: Download foo.conf
     get_url:
       url: https://docs.projectcalico.org/v3.15/manifests/calico.yaml
-      dest: /home/vagrant/calico.yaml
+      dest: '/home/{{ ansible_user }}/calico.yaml'
 
   - name: Add pod config to calico.yaml
     lineinfile:
-      dest: /home/vagrant/calico.yaml
+      dest: '/home/{{ ansible_user }}/calico.yaml'
       regexp: '^\s{12}#\s*- name: CALICO_IPV4POOL_CIDR.*$'
       line: '            - name: CALICO_IPV4POOL_CIDR'
 
   - name: Add pod config to calico.yaml
     lineinfile:
-      dest: /home/vagrant/calico.yaml
+      dest: '/home/{{ ansible_user }}/calico.yaml'
       regexp: '^\s{12}#\s*  value: "192.168.0.0\/16".*$'
       line: '              value: "172.16.0.0/16"'
 
-  - name: Install calico CNI
-    become: false
-    command: kubectl create -f calico.yaml
-
-  - name: Generate join command
-    command: kubeadm token create --print-join-command
-    register: join_command
-
-  - name: Copy join command to local file
-    become: false
-    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+  - name: Apply calico CNI
+    command: kubectl apply -f calico.yaml
+    become: no
+    register: output
+    changed_when: >- 
+      output.stdout_lines | 
+      reject('match', '^customresourcedefinition.apiextensions.k8s.io.*configured$') | 
+      reject('match', 'daemonset.apps/calico-node configured') |
+      select('match', '^.*(configured|created)$') | length > 0
 
   handlers:
   - name: docker status
     service: name=docker state=started
+
+  - name: generate join command
+    shell: kubeadm token create --print-join-command > ./join-command
+
+  - name: fetch join command
+    fetch: src=join-command dest=join-command
+
+  - name: fetch admin kubeconfig
+    fetch: src=.kube/config dest=kubeconfig
