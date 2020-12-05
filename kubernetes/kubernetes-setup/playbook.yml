@@ -4,11 +4,12 @@
   - base-kubernetes
   - master
 
-
 - hosts: worker
   roles:
   - base-kubernetes
   - worker
+  vars: 
+    master_public_ip: '{{ groups.master | first }}'
 
 - hosts: master
   roles:
