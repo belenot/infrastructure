@@ -6,4 +6,3 @@ password
 *.log
 /kubernetes/kubernetes-setup/**/join-command
 /kubernetes/kubernetes-setup/**/.kube/config
-*-inventory.yml
