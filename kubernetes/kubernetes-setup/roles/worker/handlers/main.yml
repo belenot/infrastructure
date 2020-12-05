@@ -1,6 +1,8 @@
 ---
 - name: docker status
   service: name=docker state=started
+  become: yes
 
 - name: join the node to cluster
   command: sh join-command.sh
+  become: yes

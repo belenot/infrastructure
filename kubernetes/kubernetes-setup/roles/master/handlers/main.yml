@@ -3,6 +3,7 @@
   service: 
     name: docker 
     state: started
+  become: yes
 
 - name: generate join command
   shell: kubeadm token create --print-join-command > ./join-command

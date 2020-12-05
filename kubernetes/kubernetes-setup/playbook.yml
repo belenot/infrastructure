@@ -1,0 +1,15 @@
+---
+- hosts: master
+  roles:
+  - base-kubernetes
+  - master
+
+
+- hosts: worker
+  roles:
+  - base-kubernetes
+  - worker
+
+- hosts: master
+  roles:
+  - istio
