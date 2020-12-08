@@ -1,0 +1,7 @@
+- name: Change escape character for GNU screen.
+  lineinfile:
+    create: yes
+    line: escape ^\\\
+    path: ~/.screenrc
+    regexp: ^escape .*$
+    mode: '664'

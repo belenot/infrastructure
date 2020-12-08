@@ -1,0 +1,54 @@
+- name: Get lsb_release
+  command: lsb_release -cs
+  register: lsb_release
+  changed_when: False
+
+- name: Update packages.
+  apt: 
+    name: '*'
+    state: latest
+    update_cache: yes
+  become: yes
+
+- name: Download repositories keys.
+  apt_key: 
+   url: '{{ item.key }}'
+  loop: '{{ apt_repositories }}'
+  become: yes
+
+- name: Enable repositories.
+  apt_repository:
+    repo: '{{ item.repository.replace("lsb_release", lsb_release.stdout) }}'
+  loop: '{{ apt_repositories }}'
+  become: yes
+
+- name: Install packages.
+  apt: 
+    name: '{{ item }}' 
+    state: latest 
+    update_cache: yes
+  loop: '{{ packages }}'
+  become: yes
+
+- name: Install pip packages.
+  pip: 
+    name: '{{ item }}'
+  loop: '{{ pip_packages }}'
+
+- name: Change permissions on ~/.ssh folder.
+  file:
+    path: ~/.ssh
+    mode: '700'
+
+- name: Install git private key.
+  copy: 
+    src: git_private_key
+    dest: .ssh/id_rsa
+    mode: '600'
+
+- name: Fetch infrastructure git repository.
+  git:
+    repo: '{{ git_infrastructure_url }}'
+    dest: ~/infrastructure
+    force: no
+    accept_hostkey: yes
