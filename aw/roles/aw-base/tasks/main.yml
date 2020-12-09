@@ -43,7 +43,7 @@
 - name: Install git private key.
   copy: 
     src: git_private_key
-    dest: .ssh/id_rsa
+    dest: ~/.ssh/id_rsa
     mode: '600'
 
 - name: Fetch infrastructure git repository.
