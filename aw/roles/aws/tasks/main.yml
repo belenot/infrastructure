@@ -12,7 +12,7 @@
 
 - name: Unarchive awscli archive.
   unarchive:
-    src: awscliv2.zip
+    src: ~/awscliv2.zip
     dest: ./
     remote_src: yes
   notify: install aws cli
