@@ -17,6 +17,7 @@
     remote_src: yes
     creates: ~/aws
   notify: install aws cli
+  
 - name: Make directory for aws ssh keys.
   file:
     path: ~/.ssh/aws
