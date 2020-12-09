@@ -4,4 +4,5 @@
     src: join-command/{{ master_public_ip }}/join-command 
     dest: join-command.sh 
     mode: '0777'
+  ignore_errors: yes
   notify: join the node to cluster
