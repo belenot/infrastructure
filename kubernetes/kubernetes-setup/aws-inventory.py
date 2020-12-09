@@ -1,18 +1,43 @@
 #! /usr/bin/python3.6
-import boto3, sys, json
+import boto3, sys, json, getopt
 
-ec2 = boto3.resource('ec2')
-instances = ec2.instances.all()
+
 
 
 def main(argv):
-    
-    hosts = get_addresses()
-    inventory = aws_inventory(hosts)
-    print(json.dumps(inventory, indent=2))
+    opts = dict(getopt.getopt(argv[1:], 'h', ['list', 'start', 'stop', 'help'])[0])
+    if '--help' in opts or '-h' in opts or len(opts) == 0:
+        print('{} [--help][--list][--start][--stop]'.format(argv[0]))
+        exit(0)
+
+    ec2 = boto3.resource('ec2')
+    instances = ec2.instances.all()
+    hosts = get_addresses(instances)
+
+    if '--list' in opts:
+        inventory = aws_inventory(hosts)
+        print(json.dumps(inventory, indent=2))
+
+    if '--start' in opts:
+        aws_start(instances)
+
+    if '--stop' in opts:
+        aws_stop(instances)
 
 
-def get_addresses() -> ({'master': [...], 'worker': [...]}):
+def aws_start(instances):
+    for instance in instances:
+        for tag in instance.tags:
+            if tag['Key'] == 'type' and tag['Value'] == 'kubernetes':
+                instance.start()
+
+def aws_stop(instances):
+    for instance in instances:
+        for tag in instance.tags:
+            if tag['Key'] == 'type' and tag['Value'] == 'kubernetes':
+                instance.stop()
+
+def get_addresses(instances) -> ({'master': [...], 'worker': [...]}):
     master = []
     worker = []
     for instance in instances:
