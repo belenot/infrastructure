@@ -1,0 +1,44 @@
+- hosts: all
+  vars:
+    jenkins_key_url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+  tasks:
+
+  - name: Add Jenkins repository key.
+    apt_key:
+      url: '{{ jenkins_key_url }}'
+      state: present
+    become: yes
+
+  - name: Add Jenkins repository.
+    apt_repository:
+      repo: deb https://pkg.jenkins.io/debian-stable binary/
+      state: present
+      filename: jenkins
+    become: yes
+
+  - name: Update/upgrade apt cache.
+    apt:
+      update_cache: yes
+      name: '*'
+      state: present
+    become: yes
+
+  - name: Install JDK.
+    apt:
+      name: openjdk-8-jdk
+    become: yes
+
+  - name: Install Jenkins.
+    apt:
+      name: jenkins
+    become: yes
+    notify: jenkins service
+
+  handlers:
+
+  - name: jenkins service
+    service:
+      enabled: yes
+      name: jenkins
+      state: started
+    become: yes

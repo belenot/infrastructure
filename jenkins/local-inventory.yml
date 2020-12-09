@@ -1,0 +1,8 @@
+all:
+  hosts:
+    192.168.51.10:
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: /home/belenot/projects/infrastructure/jenkins/.vagrant/machines/default/virtualbox/private_key
+      ansible_ssh_host: 127.0.0.1
+      ansible_ssh_port: 2200
+      ansible_ssh_common_args: -o StrictHostKeyChecking=no
