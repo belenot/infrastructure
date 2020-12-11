@@ -2,4 +2,4 @@
 - name: install istio
   command:
     cmd: ./istioctl install --set profile=demo -y
-    chdir: istio-1.8.0/bin
+    chdir: istio-{{ istio_version }}/bin

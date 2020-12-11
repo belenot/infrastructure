@@ -1,6 +1,7 @@
 all:
   vars:
     ansible_ssh_common_args: -o StrictHostKeyChecking=no
+#    istio_version: 1.4.6
   children:
     master:
       hosts:
@@ -23,4 +24,10 @@ all:
           node_ip: 192.168.50.12
           ansible_ssh_private_key_file: ../.vagrant/machines/node-2/virtualbox/private_key
           ansible_port: 2201
+          ansible_ssh_host: 127.0.0.1
+        node-3:
+          ansible_user: vagrant
+          node_ip: 192.168.50.13
+          ansible_ssh_private_key_file: ../.vagrant/machines/node-3/virtualbox/private_key
+          ansible_port: 2202
           ansible_ssh_host: 127.0.0.1
