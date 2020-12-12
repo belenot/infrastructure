@@ -1,0 +1,2 @@
+- name: sansible.nexus
+  version: v1.0.0
