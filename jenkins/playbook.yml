@@ -1,7 +1,20 @@
 - hosts: all
   vars:
     jenkins_key_url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+    github_known_host: '{{ lookup("file", "github-known-host.txt") }}'
   tasks:
+
+  - name: Create ~/.ssh directory.
+    file:
+      path: ~/.ssh
+      state: directory
+      mode: '700'
+
+  - name: Add github public key to ~/.ssh/known_hosts.
+    lineinfile:
+      path: ~/.ssh/known_hosts
+      line: '{{ github_known_host }}'
+      create: yes
 
   - name: Add Jenkins repository key.
     apt_key:
