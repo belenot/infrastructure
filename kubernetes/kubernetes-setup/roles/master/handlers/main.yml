@@ -17,3 +17,6 @@
   fetch: 
     src: .kube/config 
     dest: kubeconfig
+
+- name: apply external-user rbac
+  shell: kubectl apply -f external-user.yaml

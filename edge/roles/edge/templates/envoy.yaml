@@ -112,6 +112,7 @@ static_resources:
                 address: 192.168.52.10
                 port_value: 50000
   - name: kubernetes_api_server
+    connect_timeout: 30s
     load_assignment:
       cluster_name: kubernetes_api_server
       endpoints:
@@ -121,4 +122,14 @@ static_resources:
               socket_address:
                 address: 192.168.50.10
                 port_value: 6443
-
+    transport_socket:
+      name: envoy.transport_socket.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        common_tls_context:
+          validation_context: {}
+          tls_certificates:
+          - certificate_chain:
+              filename: /etc/envoy/{{ "local-" if local == true else "" }}edge-cert.pem
+            private_key:
+              filename: /etc/envoy/edge-key.pem
