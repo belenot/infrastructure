@@ -1,0 +1,5 @@
+- name: restart envoy
+  service:
+    name: envoy
+    state: restarted
+  become: yes

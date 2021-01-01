@@ -1,0 +1,69 @@
+- name: Add proxy repository key to apt.
+  apt_key:
+    url: 'https://getenvoy.io/gpg'
+  become: yes
+
+- name: Add proxy apt repository.
+  apt_repository:
+    repo: deb [arch=amd64] https://dl.bintray.com/tetrate/getenvoy-deb {{ ansible_distribution_release }} stable
+  become: yes
+
+- name: Apt update/upgrade.
+  apt:
+    update_cache: yes
+    name: '*'
+    state: present
+  become: yes
+
+- name: Install proxy.
+  apt:
+    name: getenvoy-envoy
+  become: yes
+  notify: restart envoy
+
+- name: Create /etc/envoy directory.
+  file:
+    path: /etc/envoy
+    state: directory
+  become: yes
+
+- name: Template envoy.yaml to /etc/envoy/envoy.yaml.
+  template: 
+    src: envoy.yaml
+    dest: /etc/envoy/envoy.yaml
+  become: yes
+  notify: restart envoy
+
+- name: Create /var/log/envoy directory.
+  file:
+    path: /var/log/envoy
+    state: directory
+  become: yes
+
+- name: Create /var/log/envoy/access.log file.
+  file:
+    path: /var/log/envoy/access.log
+    state: touch
+  become: yes
+
+- name: Copy envoy.service to /etc/systemd/system
+  copy:
+    src: envoy.service
+    dest: /etc/systemd/system
+    mode: '754'
+  become: yes
+  notify: restart envoy
+
+- name: Copy certificate to /etc/envoy/local-nexus.pem
+  copy:
+    src: '{{ item }}'
+    dest: /etc/envoy/{{ item }}
+  loop: [ local-edge-cert.pem, edge-cert.pem, edge-key.pem ]
+  become: yes
+
+- name: Service envoy.
+  service:
+    name: envoy
+    state: started
+    enabled: yes
+  become: yes
