@@ -1,0 +1,18 @@
+---
+- hosts: edge
+  roles:
+  - role: edge
+
+- hosts: kubernetes-master
+  roles:
+  - role: kubernetes-base
+  - role: kubernetes-master
+
+- hosts: kubernetes-worker
+  roles:
+  - role: kubernetes-base
+  - role: kubernetes-worker
+
+- hosts: kubernetes-master
+  roles:
+  - role: kubernetes-istio
