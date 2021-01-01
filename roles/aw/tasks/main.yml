@@ -1,0 +1,114 @@
+- name: Get lsb_release
+  command: lsb_release -cs
+  register: lsb_release
+  changed_when: False
+
+- name: Set environment.
+  lineinfile:
+    path: /etc/environment
+    line: LC_ALL=C
+  become: yes
+
+- name: Download repositories keys.
+  apt_key:
+    url: '{{ item.key }}'
+  loop: '{{ apt_repositories }}'
+  become: yes
+
+- name: Enable repositories.
+  apt_repository:
+    #    repo: '{{ item.repository.replace("lsb_release", lsb_release.stdout) }}'
+    repo: '{{ item.repository }}'
+  loop: '{{ apt_repositories }}'
+  become: yes
+
+- name: Update packages.
+  apt: 
+    name: '*'
+    state: latest
+    update_cache: yes
+  become: yes
+
+- name: Install packages.
+  apt: 
+    name: '{{ item }}' 
+    state: latest 
+    update_cache: yes
+  loop: '{{ packages }}'
+  become: yes
+
+- name: Install pip packages.
+  pip: 
+    name: '{{ item }}'
+    executable: /usr/bin/pip3
+  loop: '{{ pip_packages }}'
+  become: yes
+
+- name: Change permissions on ~/.ssh folder.
+  file:
+    path: ~/.ssh
+    mode: '700'
+
+- name: Install git private key.
+  copy: 
+    src: git_private_key
+    dest: ~/.ssh/id_rsa
+    mode: '600'
+
+- name: Fetch infrastructure git repository.
+  git:
+    repo: '{{ git_infrastructure_url }}'
+    dest: ~/infrastructure
+    force: no
+    accept_hostkey: yes
+
+- name: Copy .aws content.
+  copy:
+    src: .aws
+    dest: ~/
+    mode: '700'
+
+- name: Install aws cli.
+  uri:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: ~/awscliv2.zip
+    follow_redirects: 'yes'
+    status_code: [200, 304]
+
+- name: Unarchive awscli archive.
+  unarchive:
+    src: ~/awscliv2.zip
+    dest: ~/
+    remote_src: yes
+    creates: ~/aws
+  notify: install aws cli
+
+- name: Make directory for aws ssh keys.
+  file:
+    path: ~/.ssh/aws
+    state: directory
+    mode: '700'
+
+- name: Copy aws private key.
+  copy:
+    src: belenot.pem
+    dest: ~/.ssh/aws/
+    mode: '600'
+
+- name: Change escape character for GNU screen.
+  lineinfile:
+    create: yes
+    line: escape ^\\\
+    path: ~/.screenrc
+    regexp: ^escape .*$
+    mode: '664'
+
+- name: Create ~/.kube directory.
+  file:
+    path: ~/.kube
+    state: directory
+
+- name: Copy kubeconfig to ~/.kube/config.
+  copy:
+    src: kubeconfig
+    dest: ~/.kube/config

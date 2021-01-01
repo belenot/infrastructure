@@ -35,9 +35,19 @@ Vagrant.configure("2") do |config|
     config.vm.define "edge" do |edge|
         edge.vm.provider "virtualbox" do |vb|
             vb.memory = "1024"
+            vb.cpus = 2
         end
         edge.vm.network "private_network", ip: "192.168.53.10"
         edge.vm.network "forwarded_port", guest: 22, host: 2204, id: "ssh"
         edge.ssh.port = 2204
+    end
+
+    config.vm.define "aw" do |aw|
+        aw.vm.provider "virtualbox" do |vb|
+            vb.memory = "1024"
+            vb.cpus = 2
+        end
+        aw.vm.network "private_network", ip: "192.168.51.10"
+        aw.vm.network "forwarded_port", guest: 22, host: 2205, id: "ssh"
     end
 end

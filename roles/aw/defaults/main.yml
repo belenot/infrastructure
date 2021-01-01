@@ -1,0 +1,28 @@
+---
+apt_repositories:
+- key: https://download.docker.com/linux/ubuntu/gpg
+  repository: deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+- key: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  repository: deb https://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release }} main
+git_private_key: '{{ lookup(''file'', ''git_private_key'') }}'
+git_infrastructure_url: git@github.com:belenot/infrastructure.git
+packages:
+- apt-transport-https
+- ca-certificates
+- curl
+- gnupg-agent
+- software-properties-common
+- emacs
+- screen
+- python3-pip
+- git
+- docker-ce
+- docker-ce-cli
+- containerd.io
+- zip
+- unzip
+- jq
+- kubectl
+pip_packages:
+- ansible
+- boto3

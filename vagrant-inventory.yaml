@@ -36,10 +36,14 @@ all:
               ansible_ssh_private_key_file: .vagrant/machines/node-3/virtualbox/private_key
               ansible_port: 2203
               ansible_ssh_host: 127.0.0.1
+  hosts:
     edge:
-      hosts:
-        edge:
-          ansible_user: vagrant
-          ansible_ssh_private_key_file: .vagrant/machines/edge/virtualbox/private_key
-          ansible_port: 2204
-          ansible_ssh_host: 127.0.0.1
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: .vagrant/machines/edge/virtualbox/private_key
+      ansible_port: 2204
+      ansible_ssh_host: 127.0.0.1
+    aw:
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: .vagrant/machines/aw/virtualbox/private_key
+      ansible_port: 2205
+      ansible_ssh_host: 127.0.0.1
