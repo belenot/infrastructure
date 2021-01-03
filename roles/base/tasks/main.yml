@@ -1,0 +1,14 @@
+- name: Disable resolvconf service.
+  service:
+    name: resolvconf
+    state: stopped
+    enabled: no
+  become: yes
+
+- name: Set nameserver.
+  lineinfile:
+    path: /etc/resolv.conf
+    line: nameserver {{ nameserver_ip }}
+    regexp: ^nameserver .*$
+  become: yes
+  when: role_name != 'dns'

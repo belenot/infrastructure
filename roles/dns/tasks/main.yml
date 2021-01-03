@@ -1,0 +1,40 @@
+- name: Update packages.
+  apt:
+    name: '*'
+    state: latest
+    update_cache: yes
+  become: yes
+
+- name: Install bind9.
+  apt:
+    name: bind9
+    state: latest
+  become: yes
+
+- name: Copy db.alpha.belenot.com to /etc/bind.
+  copy:
+    src: '{{ "local-" if local else "" }}db.alpha.belenot.com'
+    dest: /etc/bind/db.alpha.belenot.com
+  become: yes
+  notify: restart bind
+
+- name: Copy named.conf.alpha to /etc/bind.
+  copy:
+    src: named.conf.alpha
+    dest: /etc/bind/named.conf.alpha
+  become: yes
+  notify: restart bind
+
+- name: Add named.conf.alpha to /etc/bind/named.conf
+  lineinfile:
+    path: /etc/bind/named.conf
+    line: include "/etc/bind/named.conf.alpha";
+  become: yes
+  notify: restart bind
+
+- name: Set nameserver.
+  lineinfile:
+    path: /etc/resolv.conf
+    line: 'nameserver {{ nameserver_ip }}'
+    regexp: '^nameserver .*$'
+  become: yes

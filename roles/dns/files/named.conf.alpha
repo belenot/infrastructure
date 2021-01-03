@@ -1,0 +1,5 @@
+zone "alpha.belenot.com." {
+    type master;
+    file "/etc/bind/db.alpha.belenot.com";
+    notify no;
+};
