@@ -54,11 +54,11 @@
   become: yes
   notify: restart envoy
 
-- name: Copy certificate to /etc/envoy/local-nexus.pem
+- name: Copy certificates to /etc/envoy/.
   copy:
     src: '{{ item }}'
     dest: /etc/envoy/{{ item }}
-  loop: [ edge-cert.pem, edge-key.pem ]
+  loop: [ edge-cert.pem, edge-key.pem, ca-cert.pem ]
   become: yes
 
 - name: Service envoy.
