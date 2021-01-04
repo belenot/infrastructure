@@ -3,3 +3,8 @@
   command:
     cmd: ./istioctl install --set profile=demo -y
     chdir: istio-{{ istio_version }}/bin
+  notify: label namespace
+
+- name: label namespace
+  shell: kubectl label ns default istio-injection=enabled
+  changed_when: False
