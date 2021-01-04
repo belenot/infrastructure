@@ -15,8 +15,6 @@ all:
               ansible_port: 2200
               ansible_ssh_host: 127.0.0.1
         kubernetes-worker:
-          vars:
-            master_public_ip: 192.168.50.10
           hosts:
             node-1:
               ansible_user: vagrant

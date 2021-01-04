@@ -7,14 +7,14 @@
 
 - name: Copy CA to /etc/kubernetes/pki/ca.crt.
   copy:
-    src: cacert.pem
+    src: ca-cert.pem
     dest: /etc/kubernetes/pki/ca.crt
     mode: '644'
   become: yes
 
 - name: Copy CA key to /etc/kubernetes/pki/ca.key.
   copy:
-    src: cakey.pem
+    src: ca-key.pem
     dest: /etc/kubernetes/pki/ca.key
     mode: '600'
   become: yes
@@ -28,7 +28,7 @@
 - name: Initialize the Kubernetes cluster using kubeadm
   command: >- 
     kubeadm init --apiserver-advertise-address="{{ node_ip }}" 
-    --apiserver-cert-extra-sans="{{ node_ip }}" 
+    --apiserver-cert-extra-sans="{{ node_ip }},node-0.k8s.alpha.belenot.com"
     --pod-network-cidr=172.16.0.0/16
   when: '"is running at" not in output.stdout'
   notify: 

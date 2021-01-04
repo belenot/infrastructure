@@ -1,5 +1,0 @@
----
-- name: install istio
-  command:
-    cmd: ./istioctl install --set profile=demo -y
-    chdir: istio-{{ istio_version }}/bin

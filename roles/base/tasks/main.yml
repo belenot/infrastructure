@@ -4,11 +4,11 @@
     state: stopped
     enabled: no
   become: yes
+  when: set_nameserver
 
-- name: Set nameserver.
-  lineinfile:
-    path: /etc/resolv.conf
-    line: nameserver {{ nameserver_ip }}
-    regexp: ^nameserver .*$
+- name: Template resolv.conf to /etc/resolv.conf.
+  template:
+    dest: /etc/resolv.conf
+    src: resolv.conf 
   become: yes
-  when: role_name != 'dns'
+  when: role_name != 'dns' and set_nameserver

@@ -27,8 +27,8 @@
     state: directory
   become: yes
 
-- name: Template envoy.yaml to /etc/envoy/envoy.yaml.
-  template: 
+- name: Copy envoy.yaml to /etc/envoy/envoy.yaml.
+  copy:
     src: envoy.yaml
     dest: /etc/envoy/envoy.yaml
   become: yes
@@ -58,7 +58,7 @@
   copy:
     src: '{{ item }}'
     dest: /etc/envoy/{{ item }}
-  loop: [ local-edge-cert.pem, edge-cert.pem, edge-key.pem ]
+  loop: [ edge-cert.pem, edge-key.pem ]
   become: yes
 
 - name: Service envoy.

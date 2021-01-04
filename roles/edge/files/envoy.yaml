@@ -53,7 +53,7 @@ static_resources:
             validation_context: {}
             tls_certificates: 
             - certificate_chain: 
-                filename: /etc/envoy/{{ "local-" if local == true else "" }}edge-cert.pem
+                filename: /etc/envoy/edge-cert.pem
               private_key: 
                 filename: /etc/envoy/edge-key.pem
   - name: kubernetes_api_server
@@ -81,7 +81,7 @@ static_resources:
               validation_context: {}
               tls_certificates:
                 - certificate_chain:
-                    filename: /etc/envoy/{{ "local-" if local == true else "" }}edge-cert.pem
+                    filename: /etc/envoy/edge-cert.pem
                   private_key:
                     filename: /etc/envoy/edge-key.pem
   clusters:
@@ -131,6 +131,6 @@ static_resources:
           validation_context: {}
           tls_certificates:
           - certificate_chain:
-              filename: /etc/envoy/{{ "local-" if local == true else "" }}edge-cert.pem
+              filename: /etc/envoy/edge-cert.pem
             private_key:
               filename: /etc/envoy/edge-key.pem

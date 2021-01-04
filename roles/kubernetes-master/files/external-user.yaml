@@ -35,5 +35,5 @@ roleRef:
   kind: ClusterRole
   name: external-user
 subjects:
-- kind: Group
-  name: Kholkhunov0
+- kind: User
+  name: belenot.com
