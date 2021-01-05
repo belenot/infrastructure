@@ -3,7 +3,8 @@ apt_repositories:
 - key: https://download.docker.com/linux/ubuntu/gpg
   repository: deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
 - key: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-  repository: deb https://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release }} main
+#  repository: deb https://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release }} main
+  repository: deb https://apt.kubernetes.io/ kubernetes-xenial main
 git_private_key: '{{ lookup(''file'', ''git_private_key'') }}'
 git_infrastructure_url: git@github.com:belenot/infrastructure.git
 packages:
