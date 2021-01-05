@@ -11,9 +11,9 @@
     state: latest
   become: yes
 
-- name: Copy db.alpha.belenot.com to /etc/bind.
-  copy:
-    src: '{{ "local-" if local else "" }}db.alpha.belenot.com'
+- name: Template db.alpha.belenot.com to /etc/bind.
+  template:
+    src: db.alpha.belenot.com
     dest: /etc/bind/db.alpha.belenot.com
   become: yes
   notify: restart bind
