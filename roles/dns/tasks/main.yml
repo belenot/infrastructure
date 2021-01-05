@@ -32,6 +32,21 @@
   become: yes
   notify: restart bind
 
+- name: Template named.conf.aws to /etc/bind.
+  template:
+    src: named.conf.aws
+    dest: /etc/bind/named.conf.aws
+  become: yes
+  notify: restart bind
+  when: aws_nameserver_ip is defined
+
+- name: Add named.conf.aws to /etc/bind/named.conf
+  lineinfile:
+    path: /etc/bind/named.conf
+    line: include "/etc/bind/named.conf.aws";
+  become: yes
+  notify: restart bind
+
 - name: Template resolv.conf to /etc/resolv.conf.
   template:
     dest: /etc/resolv.conf
@@ -45,3 +60,4 @@
     dest: /etc/bind/named.conf.options
   become: yes
   notify: restart bind
+

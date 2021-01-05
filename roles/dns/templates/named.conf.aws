@@ -1,0 +1,7 @@
+zone "us-east-2.compute.internal." {
+        type forward;
+        forward only;
+        forwarders {
+                {{ aws_nameserver_ip }};
+        };
+};
