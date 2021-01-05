@@ -1,10 +1,30 @@
+- name: Check resolvconf service exists.
+  command: systemctl status resolvconf
+  register: resolvconf_service
+  failed_when: false
+  changed_when: false
+
 - name: Disable resolvconf service.
   service:
     name: resolvconf
     state: stopped
     enabled: no
   become: yes
-  when: set_nameserver
+  when: set_nameserver and resolvconf_service.rc != 4
+
+- name: Check systemd-resolved service exists.
+  command: systemctl status systemd-resolved
+  register: systemd_resolved_service
+  failed_when: false
+  changed_when: false
+
+- name: Disable systemd-resolved service.
+  service:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+  become: yes
+  when: set_nameserver and systemd_resolved_service.rc != 4
 
 - name: Template resolv.conf to /etc/resolv.conf.
   template:
