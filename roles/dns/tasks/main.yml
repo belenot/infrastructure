@@ -39,3 +39,9 @@
   become: yes
   when: role_name != 'dns' and set_nameserver
 
+- name: Replace default named.conf.options.
+  copy:
+    src: named.conf.options
+    dest: /etc/bind/named.conf.options
+  become: yes
+  notify: restart bind
