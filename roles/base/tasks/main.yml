@@ -26,9 +26,8 @@
   become: yes
   when: set_nameserver and systemd_resolved_service.rc != 4
 
-- name: Set nameserver in resolv.conf.
-  lineinfile:
-    path: /etc/resolv.conf
-    line: nameserver {{ nameserver_ip }}
-    regexp: ^nameserver +.+
+- name: Template resolv.conf to /etc/resolv.conf
+  template:
+    src: resolv.conf
+    dest: /etc/resolv.conf
   become: yes
