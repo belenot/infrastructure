@@ -50,7 +50,6 @@ all:
       ansible_ssh_private_key_file: .vagrant/machines/dns/virtualbox/private_key
       ansible_port: 2206
       ansible_ssh_host: 127.0.0.1
-      #Not tested in vagrant
       domain_names:
         ns:
         - 192.168.54.10
