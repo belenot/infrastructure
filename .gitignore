@@ -16,4 +16,5 @@ password
 !/playbook.yml
 !/Vagrantfile
 !/vagrant-inventory.yaml
+!/aws-inventory.py
 !/infrastructure.drawios
