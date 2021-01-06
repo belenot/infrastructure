@@ -14,8 +14,8 @@
     dest: join-command
 
 - name: fetch admin kubeconfig
-  fetch: 
-    src: .kube/config 
+  fetch:
+    src: .kube/config
     dest: kubeconfig
 
 - name: apply external-user rbac

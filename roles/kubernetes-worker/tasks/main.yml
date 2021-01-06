@@ -1,7 +1,7 @@
 ---
 - name: Copy the join command to server location
   copy: 
-    src: join-command/k8s-master/join-command
+    src: join-command/{{ groups['kubernetes-master'][0] }}/join-command
     dest: join-command.sh 
     mode: '0777'
   ignore_errors: yes
