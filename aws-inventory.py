@@ -14,10 +14,10 @@ def main(argv):
         print(json.dumps(inventory, indent=2))
 
     if '--start' in opts:
-        aws_start(instances)
+        aws_start()
 
     if '--stop' in opts:
-        aws_stop(instances)
+        aws_stop()
 
 
 def inventory_list():
@@ -84,17 +84,19 @@ def instances_by_type(instances, instance_type):
                 result.append(instance)
     return result
 
-# def aws_start(instances):
-#     for instance in instances:
-#         for tag in instance.tags:
-#             if tag['Key'] == 'type' and tag['Value'] == 'kubernetes':
-#                 instance.start()
+def aws_start():
+    instances = boto3.resource('ec2').instances
+    for instance in instances.all():
+        for tag in instance.tags:
+            if tag['Key'] == 'type' and tag['Value'] in types and instance.state['Name'] == 'stopped':
+                instance.start()
 #
-# def aws_stop(instances):
-#     for instance in instances:
-#         for tag in instance.tags:
-#             if tag['Key'] == 'type' and tag['Value'] == 'kubernetes':
-#                 instance.stop()
+def aws_stop():
+    instances = boto3.resource('ec2').instances
+    for instance in instances.all():
+        for tag in instance.tags:
+            if tag['Key'] == 'type' and tag['Value'] in types and instance.state['Name'] == 'running':
+                instance.stop()
 #
 # def aws_inventory(hosts: {'master': [...], 'worker': [...]}):
 #
