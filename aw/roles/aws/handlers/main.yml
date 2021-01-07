@@ -1,3 +1,0 @@
-- name: install aws cli
-  command: /home/{{ ansible_user }}/aws/install
-  become: yes

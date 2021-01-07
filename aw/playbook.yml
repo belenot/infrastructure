@@ -1,5 +1,0 @@
-- hosts: all
-  roles:
-  - aw-base
-  - aws
-  - customization  
