@@ -21,3 +21,5 @@ password
 !/terraform
 /terraform/*
 !/terraform/aws.tf
+!/infrastructure.jpg
+!/README.md
