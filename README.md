@@ -7,6 +7,12 @@ Vagrant describes setup on local VMs, using VirtualBox provider.
 Host configuration is done via Ansible roles.
 Public key infrastructure is described in `/ca` directory.
 
+## Top-level architecture
+
+Image made using draw.io.
+
+![Infrastructure](infrastructure.jpg)
+
 ## Local rollout
 
 ### Prerequisites
@@ -87,9 +93,3 @@ terraform destroy
 ```
 
 Confirm plan by typing yes.
-
-## Top-level architecture
-
-Image made using draw.io.
-
-![Infrastructure](infrastructure.jpg)
