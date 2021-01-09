@@ -116,3 +116,7 @@
 - name: Install terraform.
   debug:
     msg: "TODO"
+
+- name: Setup golang environment.
+  debug:
+    msg: "TODO"
