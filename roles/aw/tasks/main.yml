@@ -112,3 +112,7 @@
   copy:
     src: kubeconfig
     dest: ~/.kube/config
+
+- name: Install terraform.
+  debug:
+    msg: "TODO"

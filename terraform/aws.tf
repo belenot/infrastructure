@@ -193,6 +193,8 @@ resource "aws_instance" "dns" {
   subnet_id                   = aws_subnet.subnet1.id
   associate_public_ip_address = true
   key_name                    = var.key_pair_name
+  # Not tested yet.
+  private_ip                  = "172.31.2.11"
   tags = {
     type      = "dns"
     generator = "terraform"
