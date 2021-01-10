@@ -5,6 +5,8 @@ apt_repositories:
 - key: https://packages.cloud.google.com/apt/doc/apt-key.gpg
 #  repository: deb https://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release }} main
   repository: deb https://apt.kubernetes.io/ kubernetes-xenial main
+- key: https://apt.releases.hashicorp.com/gpg
+  repository: deb [arch=amd64] https://apt.releases.hashicorp.com focal main
 git_private_key: '{{ lookup(''file'', ''git_private_key'') }}'
 git_infrastructure_url: git@github.com:belenot/infrastructure.git
 packages:
@@ -24,6 +26,7 @@ packages:
 - unzip
 - jq
 - kubectl
+- terraform
 pip_packages:
 - ansible
 - boto3
