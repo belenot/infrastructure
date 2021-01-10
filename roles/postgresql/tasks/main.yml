@@ -1,0 +1,12 @@
+- name: Update packages.
+  apt: 
+    name: '*'
+    state: latest
+    update_cache: yes
+  become: yes
+
+- name: Install postgresql.
+  apt:
+    name: postgresql
+    state: latest
+  become: yes

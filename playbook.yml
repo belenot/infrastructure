@@ -3,6 +3,10 @@
   roles:
   - role: dns
 
+- hosts: postgresql
+  roles:
+  - role: postgresql
+
 - hosts: aw
   roles:
   - role: aw
