@@ -1,5 +1,5 @@
 #! /usr/bin/python3
-import boto3, sys, json, getopt
+import boto3, sys, json, getopt, socket
 
 types = ['dns', 'edge', 'aw', 'kubernetes-master', 'kubernetes-worker']
 
@@ -93,10 +93,17 @@ def aws_start():
 #
 def aws_stop():
     instances = boto3.resource('ec2').instances
+    current_instance = None
     for instance in instances.all():
         for tag in instance.tags:
             if tag['Key'] == 'type' and tag['Value'] in types and instance.state['Name'] == 'running':
-                instance.stop()
+                if socket.gethostbyname(socket.gethostname()) == instance.private_ip_address:
+                    current_instance = instance
+                else:
+                    instance.stop()
+    if current_instance:
+        current_instance.stop()
+
 #
 # def aws_inventory(hosts: {'master': [...], 'worker': [...]}):
 #
