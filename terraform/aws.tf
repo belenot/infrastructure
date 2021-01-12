@@ -1,9 +1,14 @@
 terraform {
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "3.22.0"
     }
+  }
+  backend "s3" {
+    bucket = "state-bucket.belenot.com"
+    key    = "terraform.tfstate"
+    region = "us-east-2"
   }
 }
 
@@ -30,8 +35,20 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+resource "aws_s3_bucket" "state_bucket" {
+  bucket = "state-bucket.belenot.com"
+  acl    = "private"
+  versioning {
+    enabled = true
+
+  }
+  tags = {
+    type = "bucket"
+  }
+}
+
 resource "aws_vpc" "belenot" {
-  cidr_block = "172.31.0.0/16"
+  cidr_block           = "172.31.0.0/16"
   enable_dns_hostnames = true
   tags = {
     generator = "terraform"
@@ -49,13 +66,13 @@ resource "aws_route_table" "belenot" {
 }
 
 resource "aws_route_table_association" "subnet1_route" {
-  route_table_id =  aws_route_table.belenot.id
-  subnet_id = aws_subnet.subnet1.id
+  route_table_id = aws_route_table.belenot.id
+  subnet_id      = aws_subnet.subnet1.id
 }
 
 resource "aws_route_table_association" "subnet2_route" {
-  route_table_id =  aws_route_table.belenot.id
-  subnet_id = aws_subnet.subnet1.id
+  route_table_id = aws_route_table.belenot.id
+  subnet_id      = aws_subnet.subnet1.id
 }
 
 resource "aws_internet_gateway" "belenot" {
@@ -90,12 +107,12 @@ resource "aws_security_group" "alpha" {
   vpc_id      = aws_vpc.belenot.id
 
   ingress {
-    from_port         = 22
-    protocol          = "tcp"
-    to_port           = 22
-    description       = "SSH for administration."
-    cidr_blocks       = [ "0.0.0.0/0" ]
-    ipv6_cidr_blocks  = [ "::/0" ]
+    from_port        = 22
+    protocol         = "tcp"
+    to_port          = 22
+    description      = "SSH for administration."
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
@@ -119,7 +136,7 @@ resource "aws_security_group" "alpha" {
     protocol    = "-1"
     to_port     = 0
     description = "Allow any output traffic."
-    cidr_blocks = [ "0.0.0.0/0" ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -129,12 +146,12 @@ resource "aws_security_group" "edge" {
   vpc_id      = aws_vpc.belenot.id
 
   ingress {
-    from_port         = 22
-    protocol          = "tcp"
-    to_port           = 22
-    description       = "SSH for administration."
-    cidr_blocks       = [ "0.0.0.0/0" ]
-    ipv6_cidr_blocks  = [ "::/0" ]
+    from_port        = 22
+    protocol         = "tcp"
+    to_port          = 22
+    description      = "SSH for administration."
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
@@ -142,7 +159,7 @@ resource "aws_security_group" "edge" {
     protocol    = "tcp"
     to_port     = 6443
     description = "Kubernetes API Server."
-    cidr_blocks = [ "0.0.0.0/0" ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -150,7 +167,7 @@ resource "aws_security_group" "edge" {
     protocol    = "tcp"
     to_port     = 80
     description = "Ingress HTTP."
-    cidr_blocks = [ "0.0.0.0/0" ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -158,7 +175,7 @@ resource "aws_security_group" "edge" {
     protocol    = "tcp"
     to_port     = 443
     description = "Ingress HTTPS."
-    cidr_blocks = [ "0.0.0.0/0" ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -166,7 +183,7 @@ resource "aws_security_group" "edge" {
     protocol    = "tcp"
     to_port     = 8081
     description = "Nexus UI."
-    cidr_blocks = [ "0.0.0.0/0" ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -174,7 +191,7 @@ resource "aws_security_group" "edge" {
     protocol    = "tcp"
     to_port     = 5000
     description = "Nexus docker registry."
-    cidr_blocks = [ "0.0.0.0/0" ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -182,7 +199,7 @@ resource "aws_security_group" "edge" {
     protocol    = "-1"
     to_port     = 0
     description = "Allow any output traffic."
-    cidr_blocks = [ "0.0.0.0/0" ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -194,7 +211,7 @@ resource "aws_instance" "dns" {
   associate_public_ip_address = true
   key_name                    = var.key_pair_name
   # Not tested yet.
-  private_ip                  = "172.31.2.11"
+  private_ip = "172.31.2.11"
   tags = {
     type      = "dns"
     generator = "terraform"
