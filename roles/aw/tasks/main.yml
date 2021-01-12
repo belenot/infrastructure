@@ -113,6 +113,16 @@
     src: kubeconfig
     dest: ~/.kube/config
 
-- name: Setup golang environment.
-  debug:
-    msg: "TODO"
+- name: Download golang archive.
+  unarchive:
+    src: https://golang.org/dl/go1.15.6.linux-amd64.tar.gz
+    dest: /usr/local
+    remote_src: yes
+  become: yes
+
+- name: Set PATH for golang.
+  lineinfile:
+    path: /etc/profile.d/go.sh
+    line: PATH=$PATH:/usr/local/go/bin
+    create: yes
+  become: yes
