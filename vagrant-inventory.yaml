@@ -64,3 +64,9 @@ all:
         node-2.k8s:
         - 192.168.50.12
         nexus: []
+    website:
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: .vagrant/machines/website/virtualbox/private_key
+      ansible_port: 2207
+      ansible_ssh_host: 127.0.0.1
+      

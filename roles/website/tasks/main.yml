@@ -1,0 +1,61 @@
+---
+- name: Download repositories keys.
+  apt_key:
+    url: '{{ item.key }}'
+  loop: '{{ apt_repositories }}'
+  become: yes
+
+- name: Enable repositories.
+  apt_repository:
+    #    repo: '{{ item.repository.replace("lsb_release", lsb_release.stdout) }}'
+    repo: '{{ item.repository }}'
+  loop: '{{ apt_repositories }}'
+  become: yes
+
+- name: Update packages.
+  apt: 
+    name: '*'
+    state: latest
+    update_cache: yes
+  become: yes
+
+- name: Install packages.
+  apt: 
+    name: '{{ item }}' 
+    state: latest 
+    update_cache: yes
+  loop: '{{ packages }}'
+  become: yes
+
+- name: Install git private key.
+  copy: 
+    src: git_private_key
+    dest: ~/.ssh/id_rsa
+    mode: '600'
+
+- name: Fetch infrastructure git repository.
+  git:
+    repo: '{{ git_website_url }}'
+    dest: ~/website
+    force: yes
+    accept_hostkey: yes
+
+- name: Install forever npm package.
+  npm:
+    name: forever
+    global: yes
+    state: latest
+  become: yes
+
+- name: Install npm dependencies.
+  npm:
+    path: ~/website
+    
+- name: Check list of running Node.js apps.
+  command: forever list
+  register: forever_list
+  changed_when: false
+
+- name: Start website app.
+  command: forever start ~/website/main.js
+  when: forever_list.stdout.find('website/main.js') == -1

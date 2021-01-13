@@ -24,3 +24,7 @@
 - hosts: kubernetes-master
   roles:
   - role: kubernetes-istio
+
+- hosts: website
+  roles:
+  - role: website

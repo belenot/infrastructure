@@ -59,4 +59,13 @@ Vagrant.configure("2") do |config|
         dns.vm.network "private_network", ip: "192.168.54.10"
         dns.vm.network "forwarded_port", guest: 22, host: 2206, id: "ssh"
     end
+
+    config.vm.define "website" do |website|
+        website.vm.provider "virtualbox" do |vb|
+            vb.memory = "1024"
+            vb.cpus = 2
+        end
+        website.vm.network "private_network", ip: "192.168.55.10"
+        website.vm.network "forwarded_port", guest: 22, host: 2207, id: "ssh"
+    end
 end
