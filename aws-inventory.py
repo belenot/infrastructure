@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 import boto3, sys, json, getopt, socket
 
-types = ['dns', 'edge', 'aw', 'kubernetes-master', 'kubernetes-worker']
+types = ['dns', 'edge', 'aw', 'kubernetes-master', 'kubernetes-worker', 'website']
 
 def main(argv):
     opts = dict(getopt.getopt(argv[1:], 'h', ['list', 'start', 'stop', 'help'])[0])
@@ -65,7 +65,8 @@ def inventory_list():
         domain_names['ns'] = [ x.private_ip_address for x in instances_by_type(instances, 'dns') ]
         domain_names['edge'] = [ x.private_ip_address for x in instances_by_type(instances, 'edge') ]
         domain_names['aw'] = [ x.private_ip_address for x in instances_by_type(instances, 'aw') ]
-        domain_names['node-0.k8s'] = [ x.private_ip_address for x in instances_by_type(instances, 'kubernetes-master') ]
+        domain_names['node-0.k8s'] = [x.private_ip_address for x in instances_by_type(instances, 'kubernetes-master')]
+        domain_names['website'] = [x.private_ip_address for x in instances_by_type(instances, 'website')]
         kubernetes_workers = [ x.private_ip_address for x in instances_by_type(instances, 'kubernetes-worker') ]
         for i in range(0, len(kubernetes_workers)):
             domain_names['node-'+str(i+1)+'.k8s'] = [ kubernetes_workers[i] ]

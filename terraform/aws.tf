@@ -21,9 +21,8 @@ provider "aws" {
 }
 
 data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical
-
+  #   most_recent = true Commented, because causes recreation, when new ami exposed.
+  owners = ["099720109477"] # Canonical
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
@@ -32,6 +31,11 @@ data "aws_ami" "ubuntu" {
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
+  }
+
+  filter {
+    name   = "image-id"
+    values = ["ami-08541d54d54812a51"]
   }
 }
 
@@ -210,8 +214,7 @@ resource "aws_instance" "dns" {
   subnet_id                   = aws_subnet.subnet1.id
   associate_public_ip_address = true
   key_name                    = var.key_pair_name
-  # Not tested yet.
-  private_ip = "172.31.2.11"
+  private_ip                  = "172.31.2.11"
   tags = {
     type      = "dns"
     generator = "terraform"
@@ -227,6 +230,19 @@ resource "aws_instance" "edge" {
   key_name                    = var.key_pair_name
   tags = {
     type      = "edge"
+    generator = "terraform"
+  }
+}
+
+resource "aws_instance" "website" {
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.alpha.id]
+  subnet_id                   = aws_subnet.subnet1.id
+  associate_public_ip_address = true
+  key_name                    = var.key_pair_name
+  tags = {
+    type      = "website"
     generator = "terraform"
   }
 }
