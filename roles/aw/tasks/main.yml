@@ -3,40 +3,6 @@
   register: lsb_release
   changed_when: False
 
-- name: Set environment.
-  lineinfile:
-    path: /etc/environment
-    line: LC_ALL=C
-  become: yes
-
-- name: Download repositories keys.
-  apt_key:
-    url: '{{ item.key }}'
-  loop: '{{ apt_repositories }}'
-  become: yes
-
-- name: Enable repositories.
-  apt_repository:
-    #    repo: '{{ item.repository.replace("lsb_release", lsb_release.stdout) }}'
-    repo: '{{ item.repository }}'
-  loop: '{{ apt_repositories }}'
-  become: yes
-
-- name: Update packages.
-  apt: 
-    name: '*'
-    state: latest
-    update_cache: yes
-  become: yes
-
-- name: Install packages.
-  apt: 
-    name: '{{ item }}' 
-    state: latest 
-    update_cache: yes
-  loop: '{{ packages }}'
-  become: yes
-
 - name: Install pip packages.
   pip: 
     name: '{{ item }}'
