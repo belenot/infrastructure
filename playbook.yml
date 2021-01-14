@@ -28,3 +28,7 @@
 - hosts: website
   roles:
   - role: website
+
+- hosts: postgresql
+  roles:
+  - role: postgresql

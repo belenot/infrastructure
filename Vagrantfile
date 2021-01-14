@@ -68,4 +68,13 @@ Vagrant.configure("2") do |config|
         website.vm.network "private_network", ip: "192.168.55.10"
         website.vm.network "forwarded_port", guest: 22, host: 2207, id: "ssh"
     end
+
+    config.vm.define "postgresql" do |postgresql|
+        postgresql.vm.provider "virtualbox" do |vb|
+            vb.memory = "1024"
+            vb.cpus = 2
+        end
+        postgresql.vm.network "private_network", ip: "192.168.56.10"
+        postgresql.vm.network "forwarded_port", guest: 22, host: 2208, id: "ssh"
+    end
 end
