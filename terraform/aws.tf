@@ -219,6 +219,10 @@ resource "aws_instance" "dns" {
     type      = "dns"
     generator = "terraform"
   }
+
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
+  }
 }
 
 resource "aws_instance" "edge" {
@@ -231,6 +235,9 @@ resource "aws_instance" "edge" {
   tags = {
     type      = "edge"
     generator = "terraform"
+  }
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
   }
 }
 
@@ -245,6 +252,9 @@ resource "aws_instance" "website" {
     type      = "website"
     generator = "terraform"
   }
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
+  }
 }
 
 resource "aws_instance" "aw" {
@@ -258,6 +268,9 @@ resource "aws_instance" "aw" {
     type      = "aw"
     generator = "terraform"
   }
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
+  }
 }
 
 resource "aws_instance" "kubernetes-master" {
@@ -270,6 +283,9 @@ resource "aws_instance" "kubernetes-master" {
   tags = {
     type      = "kubernetes-master"
     generator = "terraform"
+  }
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
   }
 }
 
@@ -286,5 +302,8 @@ resource "aws_instance" "kubernetes-worker" {
   tags = {
     type      = "kubernetes-worker"
     generator = "terraform"
+  }
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
   }
 }
