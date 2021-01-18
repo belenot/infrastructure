@@ -10,11 +10,25 @@ rules:
     resources:
     - pods
     - pods/exec
+    - pods/log
     - services
     - deployments
     - configmaps
     - secrets
     - horizontalpodautoscalers
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - patch
+    - watch
+    - delete
+    - deletecollection
+  - apiGroups:
+    - "getambassador.io"
+    resources:
+    - mappings
     verbs:
     - get
     - list
