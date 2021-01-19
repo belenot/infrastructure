@@ -51,10 +51,8 @@
   loop: '{{ apt_repositories }}'
   become: yes
 
-- name: Update packages.
-  apt: 
-    name: '*'
-    state: latest
+- name: Update cache.
+  apt:
     update_cache: yes
   become: yes
 
