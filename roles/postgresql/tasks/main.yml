@@ -1,3 +1,50 @@
-- name: Do nothing
-  debug: 
-    msg: Do nothing.
+- name: Install pip packages.
+  pip:
+    name: 'psycopg2'
+    executable: /usr/bin/pip3
+  become: yes
+
+- name: Create  user for postgresql.
+  postgresql_user:
+    name: '{{ item }}'
+    password: '{{ item }}'
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  become: yes
+  become_user: postgres
+  loop: '{{ postgresql_databases }}'
+
+- name: Create database for postgresql users.
+  postgresql_db:
+    name: '{{ item }}'
+    owner: '{{ item }}'
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  become: yes
+  become_user: postgres
+  loop: '{{ postgresql_databases }}'
+
+- name: Listen on postgresql connection on all interfaces.
+  postgresql_set:
+    name: listen_addresses
+    value: '*'
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  become: yes
+  become_user: postgres
+  notify: restart postgresql
+
+- name: Allow postgresql users for authentication.
+  postgresql_pg_hba:
+    dest: /etc/postgresql/12/main/pg_hba.conf
+    contype: host
+    users: '{{ item }}'
+    source: 0.0.0.0/0
+    databases: '{{ item }}'
+    method: md5
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  become: yes
+  become_user: postgres
+  loop: '{{ postgresql_databases }}'
+  notify: restart postgresql

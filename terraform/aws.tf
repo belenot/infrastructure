@@ -241,6 +241,8 @@ resource "aws_instance" "edge" {
   }
 }
 
+
+
 resource "aws_instance" "website" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
@@ -266,6 +268,22 @@ resource "aws_instance" "aw" {
   key_name                    = var.key_pair_name
   tags = {
     type      = "aw"
+    generator = "terraform"
+  }
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
+  }
+}
+
+resource "aws_instance" "postgresql" {
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.alpha.id]
+  subnet_id                   = aws_subnet.subnet1.id
+  associate_public_ip_address = true
+  key_name                    = var.key_pair_name
+  tags = {
+    type      = "postgresql"
     generator = "terraform"
   }
   lifecycle {

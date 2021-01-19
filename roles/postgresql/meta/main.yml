@@ -6,10 +6,10 @@ dependencies:
       - key: https://www.postgresql.org/media/keys/ACCC4CF8.asc
         repository: deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main
       packages:
-      - postgresql-12
       - apt-transport-https
       - ca-certificates
       - curl
+      - acl
       - gnupg-agent
       - software-properties-common
       - emacs
@@ -17,3 +17,8 @@ dependencies:
       - zip
       - unzip
       - jq
+      - postgresql-12
+      - python3-pip
+      - libpq-dev
+      - python-dev
+      - python-setuptools
