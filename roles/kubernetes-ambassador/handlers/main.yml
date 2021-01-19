@@ -1,0 +1,3 @@
+---
+- name: apply ambassador service
+  command: kubectl apply -f ambassador-service.yml

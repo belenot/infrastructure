@@ -9,6 +9,11 @@
     kubectl apply -f https://www.getambassador.io/yaml/aes-crds.yaml && 
     kubectl wait --for condition=established --timeout=120s crd -lproduct=aes && 
     kubectl apply -f https://www.getambassador.io/yaml/aes.yaml && 
-    kubectl -n ambassador wait --for condition=available --timeout=90s deploy -lproduct=aes && 
-    kubectl patch -n ambassador svc ambassador -p '{"spec": {"externalIPs": ["{{ external_ip }}"]}}'
+    kubectl -n ambassador wait --for condition=available --timeout=90s deploy -lproduct=aes
   when: check_ambassador.rc != 0
+
+- name: Copy ambassador-service.yml
+  copy:
+    src: ambassador-service.yml
+    dest: ambassador-service.yml
+  notify: apply ambassador service

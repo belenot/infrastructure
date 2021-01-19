@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: ambassador-service
+    product: aes
+  name: ambassador
+  namespace: ambassador
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: http
+    nodePort: 30080
+    port: 80
+    protocol: TCP
+    targetPort: http
+  - name: https
+    nodePort: 30443
+    port: 443
+    protocol: TCP
+    targetPort: https
+  selector:
+    service: ambassador
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
