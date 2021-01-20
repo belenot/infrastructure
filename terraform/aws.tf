@@ -106,7 +106,7 @@ resource "aws_subnet" "subnet2" {
 }
 
 resource "aws_security_group" "alpha" {
-  name        = "alpha1"
+  name        = "alpha"
   description = "Alpha: Internal subnet."
   vpc_id      = aws_vpc.belenot.id
 
@@ -145,7 +145,7 @@ resource "aws_security_group" "alpha" {
 }
 
 resource "aws_security_group" "edge" {
-  name        = "edge1"
+  name        = "edge"
   description = "Edge: Ingress/Egress proxy."
   vpc_id      = aws_vpc.belenot.id
 
