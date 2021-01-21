@@ -28,3 +28,4 @@ dependencies:
       - jq
       - kubectl
       - terraform
+      - openjdk-8-jdk
