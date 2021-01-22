@@ -7,8 +7,8 @@
 
 - name: Fetch infrastructure git repository.
   git:
-    repo: '{{ git_website_url }}'
-    dest: ~/website
+    repo: '{{ git_ui_url }}'
+    dest: ~/ui
     force: yes
     accept_hostkey: yes
 
@@ -21,7 +21,21 @@
 
 - name: Install npm dependencies.
   npm:
-    path: ~/website
+    path: ~/ui
+
+- name: Install webpack cli.
+  command: npm install -D webpack-cli webpack
+
+- name: Webpack Build.
+  command:
+    cmd: npx webpack
+    chdir: ~/ui
+
+- name: Copy dist to public.
+  copy:
+    remote_src: yes
+    src: ~/ui/dist
+    dest: ~/ui/public/
     
 - name: Check list of running Node.js apps.
   command: forever list
@@ -29,5 +43,5 @@
   changed_when: false
 
 - name: Start website app.
-  command: forever start ~/website/main.js
-  when: forever_list.stdout.find('website/main.js') == -1
+  command: forever start ~/ui/index.js
+  when: forever_list.stdout.find('ui/index.js') == -1
