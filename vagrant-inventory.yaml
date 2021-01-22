@@ -65,6 +65,8 @@ all:
         - 192.168.50.12
         postgresql:
         - 192.168.56.10
+        website:
+        - 192.168.55.10
         nexus: []
     website:
       ansible_user: vagrant
