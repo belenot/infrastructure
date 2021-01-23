@@ -5,7 +5,7 @@
     dest: ~/.ssh/id_rsa
     mode: '600'
 
-- name: Fetch infrastructure git repository.
+- name: Fetch git repository.
   git:
     repo: '{{ git_ui_url }}'
     dest: ~/ui
@@ -27,7 +27,7 @@
 
 - name: Webpack Build.
   command:
-    cmd: npx webpack
+    cmd: npm run-script build
     chdir: ~/ui
 
 - name: Copy dist to public.
