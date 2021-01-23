@@ -1,0 +1,17 @@
+[Unit]
+Description=UI for Website.
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User={{ ansible_user }}
+ExecStart=/usr/bin/node /home/{{ ansible_user }}/ui/index.js
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=Website
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+---
+- name: restart ui
+  service:
+    name: ui
+    state: restarted
+  become: yes

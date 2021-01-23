@@ -20,8 +20,13 @@
   become: yes
 
 - name: Install npm dependencies.
-  npm:
-    path: ~/ui
+  # NPM Ansible Modules doesn't install dev dependencies.
+  # npm:
+  #   path: ~/ui
+  command:
+    cmd: npm install
+    chdir: ~/ui
+  changed_when: false
 
 - name: Install webpack cli.
   command: npm install -D webpack-cli webpack
@@ -37,11 +42,16 @@
     src: ~/ui/dist
     dest: ~/ui/public/
     
-- name: Check list of running Node.js apps.
-  command: forever list
-  register: forever_list
-  changed_when: false
+- name: Template ui.service to /etc/systemd/system.
+  template:
+    src: ui.service
+    dest: /etc/systemd/system/
+  become: yes
+  notify: restart ui
 
-- name: Start website app.
-  command: forever start ~/ui/index.js
-  when: forever_list.stdout.find('ui/index.js') == -1
+- name: Start UI.
+  service:
+    name: ui
+    state: started
+    enabled: yes
+  become: yes
