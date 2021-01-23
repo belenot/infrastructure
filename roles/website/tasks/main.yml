@@ -11,13 +11,7 @@
     dest: ~/ui
     force: yes
     accept_hostkey: yes
-
-- name: Install forever npm package.
-  npm:
-    name: forever
-    global: yes
-    state: latest
-  become: yes
+  notify: restart ui
 
 - name: Install npm dependencies.
   # NPM Ansible Modules doesn't install dev dependencies.
