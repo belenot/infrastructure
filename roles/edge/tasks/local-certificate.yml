@@ -3,4 +3,5 @@
     src: '{{ item }}'
     dest: /etc/envoy/pki/belenot.com/{{ item }}
   loop: [ edge-cert.pem, edge-key.pem, ca-cert.pem ]
+  notify: restart envoy
   become: yes
