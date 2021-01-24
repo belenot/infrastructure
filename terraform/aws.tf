@@ -16,6 +16,12 @@ variable "key_pair_name" {
   default = "belenot"
 }
 
+data "aws_eip" "edge_eip" {
+  tags = {
+    type = "edge"
+  }
+}
+
 provider "aws" {
   region = "us-east-2"
 }
@@ -39,16 +45,31 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-resource "aws_s3_bucket" "state_bucket" {
-  bucket = "state-bucket.belenot.com"
-  acl    = "private"
-  versioning {
-    enabled = true
+// Created S3 Bucket initially, but after that used as datasource
+//resource "aws_s3_bucket" "state_bucket" {
+//  bucket = "state-bucket.belenot.com"
+//  acl    = "private"
+//  versioning {
+//    enabled = true
+//
+//  }
+//  tags = {
+//    type = "bucket"
+//  }
+//}
 
-  }
-  tags = {
-    type = "bucket"
-  }
+//resource "aws_eip" "edge_eip" {
+//  vpc        = true
+//  instance   = aws_instance.edge.id
+//  tags = {
+//    type      = "edge"
+//    generator = "terraform"
+//  }
+//}
+
+resource "aws_eip_association" "edge_eip_association"{
+  instance_id = aws_instance.edge.id
+  allocation_id = data.aws_eip.edge_eip.id
 }
 
 resource "aws_vpc" "belenot" {
@@ -230,7 +251,7 @@ resource "aws_instance" "edge" {
   instance_type               = "t2.micro"
   vpc_security_group_ids      = [aws_security_group.edge.id]
   subnet_id                   = aws_subnet.subnet1.id
-  associate_public_ip_address = true
+//  associate_public_ip_address = true
   key_name                    = var.key_pair_name
   tags = {
     type      = "edge"
