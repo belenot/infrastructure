@@ -1,6 +1,6 @@
 - name: Add proxy repository key to apt.
   apt_key:
-    url: 'https://getenvoy.io/gpg'
+    url: 'https://www.getenvoy.io/gpg'
   become: yes
 
 - name: Add proxy apt repository.
