@@ -39,7 +39,7 @@ def inventory_list():
                 if tag['Key'] == 'type' and tag['Value'] == instance_type:
                     if instance_type not in inventory:
                         inventory[instance_type] = {'hosts': [], 'vars': {}}
-                    if instance.public_ip_address:
+                    if instance.public_ip_address and instance.state['Name'] == 'running':
                         inventory[instance_type]['hosts'].append(instance.public_ip_address)
 
     for group in inventory:
