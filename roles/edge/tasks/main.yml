@@ -54,12 +54,30 @@
   become: yes
   notify: restart envoy
 
-- name: Copy certificates to /etc/envoy/.
+- name: Create directories for pki in /etc/envoy/pki directory.
+  file:
+    state: directory
+    path: /etc/envoy/pki/{{ item }}
+    recurse: yes
+  loop: [ belenot.com, alpha ]
+  become: yes
+
+- name: Copy alpha certificates.
   copy:
     src: '{{ item }}'
-    dest: /etc/envoy/{{ item }}
+    dest: /etc/envoy/pki/alpha/{{ item }}
   loop: [ edge-cert.pem, edge-key.pem, ca-cert.pem ]
   become: yes
+
+- name: Get certificate via ACME for belenot.com tasks.
+  include_tasks:
+    file: acme-certificate.yml
+  when: not ignore_acme
+
+- name: Get self-signed local certs for belenot.com tasks.
+  include_tasks:
+    file: local-certificate.yml
+  when: ignore_acme
 
 - name: Service envoy.
   service:

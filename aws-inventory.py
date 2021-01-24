@@ -60,6 +60,7 @@ def inventory_list():
             vars = inventory['_meta']['hostvars'][host]
             vars['set_nameserver'] = True
             vars['nameserver_ip'] = nameserver_ip
+
         inventory['dns']['vars'] = {'domain_names': {}}
         domain_names = inventory['dns']['vars']['domain_names']
         domain_names['ns'] = [ x.private_ip_address for x in instances_by_type(instances, 'dns') ]
@@ -74,6 +75,7 @@ def inventory_list():
         domain_names['nexus'] = [ x.private_ip_address for x in instances_by_type(instances, 'nexus') ]
 
 
+    inventory['edge']['vars']['ignore_acme'] = False
 
     return inventory
 

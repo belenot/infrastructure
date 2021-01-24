@@ -1,0 +1,101 @@
+- name: Stop envoy.
+  service:
+    name: envoy
+    state: stopped
+  become: yes
+  notify: restart envoy
+  ignore_errors: yes # In case ignore is not installed or stopped.
+
+- name: Install apache2.
+  apt:
+    name: apache2
+  become: yes
+
+- name: Start apache2.
+  service:
+    name: apache2
+    state: started
+    enabled: no
+  become: yes
+
+- name: Create cert directory.
+  file:
+    path: cert
+    mode: '700'
+    state: directory
+  become: yes
+
+- name: Create private key for ACME account.
+  openssl_privatekey:
+    path: cert/acme-account-key.pem
+    backup: yes
+    mode: '600'
+  become: yes
+
+- name: Create private key for signing edge's CSR.
+  openssl_privatekey:
+    path: /etc/envoy/pki/belenot.com/edge-key.pem
+    backup: yes
+  become: yes
+
+- name: Create csr for ACME.
+  openssl_csr:
+    path: /etc/envoy/pki/belenot.com/edge-csr.pem
+    privatekey_path: /etc/envoy/pki/belenot.com/edge-key.pem
+    backup: yes
+    common_name: belenot.com
+    subject:
+      CN: belenot.com
+    subject_alt_name:
+    - DNS:belenot.com
+  become: yes
+
+- name: Create a challenge for belenot.com using an account key from a file.
+  community.crypto.acme_certificate:
+    acme_version: 2
+    acme_directory: https://acme-v02.api.letsencrypt.org/directory
+    modify_account: yes
+    terms_agreed: yes
+    account_email: kholhunov0@gmail.com
+    account_key_src: cert/acme-account-key.pem
+    csr: /etc/envoy/pki/belenot.com/edge-csr.pem
+    dest: /etc/envoy/pki/belenot.com/edge-cert.pem
+  register: belenot_com_challenge
+  become: yes
+
+- name: Debug.
+  debug:
+    var: belenot_com_challenge
+
+- name: Ensure destination directory for ACME challenge exists.
+  file:
+    state: directory
+    path: /var/www/html/{{ belenot_com_challenge['challenge_data']['belenot.com']['http-01']['resource'] | dirname }}
+    recurse: yes
+  when: belenot_com_challenge is changed and 'belenot.com' in belenot_com_challenge['challenge_data']
+  become: yes
+
+- name: Copy challenge for ACME validation.
+  copy:
+    dest: /var/www/html/{{ belenot_com_challenge['challenge_data']['belenot.com']['http-01']['resource'] }}
+    content: "{{ belenot_com_challenge['challenge_data']['belenot.com']['http-01']['resource_value'] }}"
+  when: belenot_com_challenge is changed and 'belenot.com' in belenot_com_challenge['challenge_data']
+  become: yes
+
+- name: Let the challenge be validated and retrieve the cert and intermediate certificate.
+  community.crypto.acme_certificate:
+    acme_version: 2
+    acme_directory: https://acme-v02.api.letsencrypt.org/directory
+    account_key_src: cert/acme-account-key.pem
+    csr: /etc/envoy/pki/belenot.com/edge-csr.pem
+    dest: /etc/envoy/pki/belenot.com/edge-cert.pem
+    data: '{{ belenot_com_challenge }}'
+  become: yes
+  when: belenot_com_challenge is changed and 'belenot.com' in belenot_com_challenge['challenge_data']
+  notify: restart envoy
+
+- name: stop apache2
+  service:
+    name: apache2
+    state: stopped
+  become: yes

@@ -53,9 +53,9 @@ static_resources:
             validation_context: {}
             tls_certificates:
             - certificate_chain:
-                filename: /etc/envoy/edge-cert.pem
+                filename: /etc/envoy/pki/alpha/edge-cert.pem
               private_key:
-                filename: /etc/envoy/edge-key.pem
+                filename: /etc/envoy/pki/alpha/edge-key.pem
   - name: website
     address:
       socket_address:
@@ -92,9 +92,9 @@ static_resources:
             validation_context: {}
             tls_certificates:
             - certificate_chain:
-                filename: /etc/envoy/edge-cert.pem
+                filename: /etc/envoy/pki/belenot.com/edge-cert.pem
               private_key:
-                filename: /etc/envoy/edge-key.pem
+                filename: /etc/envoy/pki/belenot.com/edge-key.pem
   - name: kubernetes_api_server
     address:
       socket_address:
@@ -120,12 +120,12 @@ static_resources:
           common_tls_context:
             validation_context:
               trusted_ca:
-                filename: /etc/envoy/ca-cert.pem
+                filename: /etc/envoy/pki/alpha/ca-cert.pem
             tls_certificates:
             - certificate_chain:
-                filename: /etc/envoy/edge-cert.pem
+                filename: /etc/envoy/pki/alpha/edge-cert.pem
               private_key:
-                filename: /etc/envoy/edge-key.pem
+                filename: /etc/envoy/pki/alpha/edge-key.pem
   - name: kubernetes_ambassador_http
     address:
       socket_address:
@@ -147,7 +147,7 @@ static_resources:
     address:
       socket_address:
         address: 0.0.0.0
-        port_value: 6443
+        port_value: 8443
     filter_chains:
     - filters:
       - name: envoy.filters.network.tcp_proxy
@@ -168,9 +168,9 @@ static_resources:
             validation_context: {}
             tls_certificates:
             - certificate_chain:
-                filename: /etc/envoy/edge-cert.pem
+                filename: /etc/envoy/pki/alpha/edge-cert.pem
               private_key:
-                filename: /etc/envoy/edge-key.pem
+                filename: /etc/envoy/pki/alpha/edge-key.pem
 
   clusters:
   - name: nexus_http
@@ -219,9 +219,9 @@ static_resources:
           validation_context: {}
           tls_certificates:
           - certificate_chain:
-              filename: /etc/envoy/edge-cert.pem
+              filename: /etc/envoy/pki/alpha/edge-cert.pem
             private_key:
-              filename: /etc/envoy/edge-key.pem
+              filename: /etc/envoy/pki/alpha/edge-key.pem
   - name: kubernetes_ambassador_http
     connect_timeout: 30s
     type: LOGICAL_DNS
@@ -254,9 +254,9 @@ static_resources:
           validation_context: {}
           tls_certificates:
           - certificate_chain:
-              filename: /etc/envoy/edge-cert.pem
+              filename: /etc/envoy/pki/alpha/edge-cert.pem
             private_key:
-              filename: /etc/envoy/edge-key.pem
+              filename: /etc/envoy/pki/alpha/edge-key.pem
   - name: website
     connect_timeout: 30s
     type: LOGICAL_DNS

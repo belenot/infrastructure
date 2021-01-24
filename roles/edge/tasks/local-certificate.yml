@@ -1,0 +1,6 @@
+- name: Copy certificates to /etc/envoy/belenot.com.
+  copy:
+    src: '{{ item }}'
+    dest: /etc/envoy/pki/belenot.com/{{ item }}
+  loop: [ edge-cert.pem, edge-key.pem, ca-cert.pem ]
+  become: yes
