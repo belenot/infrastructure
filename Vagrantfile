@@ -77,4 +77,10 @@ Vagrant.configure("2") do |config|
         postgresql.vm.network "private_network", ip: "192.168.56.10"
         postgresql.vm.network "forwarded_port", guest: 22, host: 2208, id: "ssh"
     end
+
+    config.vm.define "nexus" do |nexus|
+        nexus.vm.network "private_network", ip: "192.168.57.10"
+        nexus.vm.hostname = "nexus"
+        nexus.vm.network "forwarded_port", guest: 22, host: 2209, id: "ssh"
+    end
 end
