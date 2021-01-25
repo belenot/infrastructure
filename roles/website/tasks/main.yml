@@ -7,45 +7,39 @@
 
 - name: Fetch git repository.
   git:
-    repo: '{{ git_ui_url }}'
-    dest: ~/ui
+    repo: '{{ git_website_url }}'
+    dest: ~/website
     force: yes
     accept_hostkey: yes
-  notify: restart ui
+  notify: restart website
 
 - name: Install npm dependencies.
   # NPM Ansible Modules doesn't install dev dependencies.
   # npm:
-  #   path: ~/ui
+  #   path: ~/website
   command:
     cmd: npm install
-    chdir: ~/ui
+    chdir: ~/website
   changed_when: false
 
 - name: Install webpack cli.
   command: npm install -D webpack-cli webpack
 
-- name: Webpack Build.
+- name: Gradle Build.
   command:
-    cmd: npm run-script build
-    chdir: ~/ui
-
-- name: Copy dist to public.
-  copy:
-    remote_src: yes
-    src: ~/ui/dist
-    dest: ~/ui/public/
+    cmd: ./gradlew shadowJar --no-daemon
+    chdir: ~/website
     
-- name: Template ui.service to /etc/systemd/system.
+- name: Template website.service to /etc/systemd/system.
   template:
-    src: ui.service
+    src: website.service
     dest: /etc/systemd/system/
   become: yes
-  notify: restart ui
+  notify: restart website
 
 - name: Start UI.
   service:
-    name: ui
+    name: website
     state: started
     enabled: yes
   become: yes

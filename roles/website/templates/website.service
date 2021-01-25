@@ -1,5 +1,5 @@
 [Unit]
-Description=UI for Website.
+Description=Website Belenot.
 After=network.target
 StartLimitIntervalSec=0
 
@@ -8,7 +8,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User={{ ansible_user }}
-ExecStart=/usr/bin/node /home/{{ ansible_user }}/ui/index.js
+ExecStart=/usr/bin/java -jar /home/{{ ansible_user }}/website/build/libs/website-all.jar
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=Website

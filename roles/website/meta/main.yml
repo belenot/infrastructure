@@ -16,4 +16,4 @@ dependencies:
       - zip
       - unzip
       - jq
-      - nodejs
+      - openjdk-8-jdk
