@@ -1,6 +1,0 @@
-- name: Install and Configure nexus
-  hosts: all
-
-  roles:
-  - role: sansible.nexus
-    sansible_nexus_configuration_admin_password: securepassword
