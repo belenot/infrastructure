@@ -4,6 +4,12 @@
     name: '{{ item }}'
   loop: [ lxml ]
 
+- name: Ensure website.jar doesn't exists.
+  file:
+    path: website/website.jar
+    state: absent
+  when: delete_previous_jar
+
 - name: Ensure directory website exists.
   file:
     path: website/
@@ -19,7 +25,8 @@
     validate_certs: no
     username: '{{ maven_repo_username }}'
     password: '{{ maven_repo_password }}'
-    
+  notify: restart website
+
 - name: Template website.service to /etc/systemd/system.
   template:
     src: website.service
