@@ -28,6 +28,17 @@ static_resources:
                   prefix: "/"
                 route:
                   cluster: nexus_http
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+          common_tls_context:
+            validation_context: {}
+            tls_certificates:
+            - certificate_chain:
+                filename: /etc/envoy/pki/belenot.com/edge-cert.pem
+              private_key:
+                filename: /etc/envoy/pki/belenot.com/edge-key.pem
   - name: nexus_docker
     address:
       socket_address:
