@@ -26,6 +26,7 @@ def inventory_list():
     common_vars = {
         'ansible_ssh_common_args': '-o StrictHostKeyChecking=no',
         'ansible_ssh_private_key_file': '~/.ssh/aws/belenot.pem',
+        'ansible_python_interpreter': '/usr/bin/python3',
         'ansible_user': 'ubuntu',
         'set_nameserver': False,
         'nameserver_ip': None
