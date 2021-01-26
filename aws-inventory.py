@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 import boto3, sys, json, getopt, socket
 
-types = ['dns', 'edge', 'aw', 'kubernetes-master', 'kubernetes-worker', 'website', 'postgresql']
+types = ['dns', 'edge', 'aw', 'kubernetes-master', 'kubernetes-worker', 'website', 'postgresql', 'nexus']
 
 def main(argv):
     opts = dict(getopt.getopt(argv[1:], 'h', ['list', 'start', 'stop', 'help'])[0])
@@ -76,6 +76,7 @@ def inventory_list():
 
 
     inventory['edge']['vars']['ignore_acme'] = False
+    inventory['nexus']['vars']['vault_nexus_admin_password'] = 'nexus_password'
 
     return inventory
 
