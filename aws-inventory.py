@@ -78,6 +78,8 @@ def inventory_list():
 
     inventory['edge']['vars']['ignore_acme'] = False
     inventory['nexus']['vars']['vault_nexus_admin_password'] = 'nexus_password'
+    inventory['website']['vars']['maven_repo_username'] = 'admin'
+    inventory['website']['vars']['maven_repo_password'] = 'nexus_password'
 
     return inventory
 

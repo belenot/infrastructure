@@ -75,6 +75,8 @@ all:
       ansible_ssh_private_key_file: .vagrant/machines/website/virtualbox/private_key
       ansible_port: 2207
       ansible_ssh_host: 127.0.0.1
+      maven_repo_username: admin
+      maven_repo_password: nexus_password
     postgresql:
       ansible_user: vagrant
       ansible_ssh_private_key_file: .vagrant/machines/postgresql/virtualbox/private_key
