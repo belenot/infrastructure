@@ -1,0 +1,4 @@
+dependencies:
+- role: sansible.nexus
+  vars:
+    sansible_nexus_configuration_admin_password: '{{ vault_nexus_admin_password }}'

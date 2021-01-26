@@ -33,3 +33,7 @@
 - hosts: postgresql
   roles:
   - role: postgresql
+
+- hosts: nexus
+  roles:
+  - role: nexus
