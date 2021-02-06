@@ -1,4 +1,10 @@
 ---
+- name: Set environment variable for Jenkins Public Url.
+  lineinfile:
+    path: /etc/environment
+    line: JENKINS_PUBLIC_URL={{ jenkins_public_url }}
+  become: yes
+
 - name: Create home directory for Jenkins.
   user:
     name: jenkins

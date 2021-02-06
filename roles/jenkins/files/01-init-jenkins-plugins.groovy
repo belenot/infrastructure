@@ -12,6 +12,11 @@ import jenkins.install.*
 
 println('Init jenkins plugins.')
 
+def jlc = JenkinsLocationConfiguration.get()
+def jenkinsPublicUrl = System.getenv()["JENKINS_PUBLIC_URL"]
+jlc.setUrl(jenkinsPublicUrl)
+jlc.save()
+
 final List<String> REQUIRED_PLUGINS = [
         "ace-editor",
         "ant",
