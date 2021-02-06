@@ -83,4 +83,13 @@ Vagrant.configure("2") do |config|
         nexus.vm.hostname = "nexus"
         nexus.vm.network "forwarded_port", guest: 22, host: 2209, id: "ssh"
     end
+
+    config.vm.define "jenkins" do |jenkins|
+        jenkins.vm.provider "virtualbox" do |vb|
+            vb.memory = "1024"
+            vb.cpus = 2
+        end
+        jenkins.vm.network "private_network", ip: "192.168.58.10"
+        jenkins.vm.network "forwarded_port", guest: 22, host: 2210, id: "ssh"
+    end
 end
