@@ -373,7 +373,7 @@ resource "aws_instance" "nexus" {
 
 resource "aws_instance" "jenkins" {
   ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
+  instance_type               = "t2.medium"
   vpc_security_group_ids      = [aws_security_group.alpha.id]
   subnet_id                   = aws_subnet.subnet1.id
   associate_public_ip_address = true
