@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-IMAGE_NAME = "ubuntu/xenial64"
+IMAGE_NAME = "ubuntu/bionic64"
 KUBERNETES_WORKERS = 3
 
 Vagrant.configure("2") do |config|
