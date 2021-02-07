@@ -29,6 +29,7 @@
 - hosts: website
   roles:
   - role: website
+  tags: website
 
 - hosts: postgresql
   roles:
