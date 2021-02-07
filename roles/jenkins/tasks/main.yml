@@ -1,4 +1,14 @@
 ---
+- name: Copy aws and ssh configs from {{ ansible_user }} to jenkins user.
+  copy:
+    remote_src: yes
+    src: /home/{{ ansible_user }}/{{ item }}
+    dest: /home/jenkins
+    owner: jenkins
+    group: jenkins
+  become: yes
+  loop: [ '.aws', '.ssh' ]
+
 - name: Set environment variable for Jenkins Public Url.
   lineinfile:
     path: /etc/environment
