@@ -219,6 +219,14 @@ resource "aws_security_group" "edge" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 8080
+    protocol    = "tcp"
+    to_port     = 8080
+    description = "Jenkins."
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     protocol    = "-1"
@@ -356,6 +364,22 @@ resource "aws_instance" "nexus" {
   key_name                    = var.key_pair_name
   tags = {
     type      = "nexus"
+    generator = "terraform"
+  }
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
+  }
+}
+
+resource "aws_instance" "jenkins" {
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.alpha.id]
+  subnet_id                   = aws_subnet.subnet1.id
+  associate_public_ip_address = true
+  key_name                    = var.key_pair_name
+  tags = {
+    type      = "jenkins"
     generator = "terraform"
   }
   lifecycle {
