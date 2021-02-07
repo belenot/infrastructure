@@ -105,3 +105,28 @@
   become: yes
   become_user: jenkins
   notify: restart jenkins
+
+- name: Install NodeJS.
+  snap:
+    name: node
+    channel: 14/stable
+    classic: yes
+  become: yes
+
+- name: Copy ca.
+  copy:
+    src: ca/ca-cert.pem
+    dest: ~/
+  become: yes
+
+- name: Add nexus.alpha.belenot.com cert to java keystore.
+  java_cert:
+    keystore_pass: changeit
+    keystore_path: /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
+    cert_alias: alpha.belenot.com
+    cert_path: ~/ca-cert.pem
+  become: yes
+
+- name: Configure credentials for AWS S3 Bucket for terraform state.
+  debug:
+    msg: TODO
