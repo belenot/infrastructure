@@ -1,0 +1,4 @@
+---
+roles:
+- name: sansible.nexus
+  version: v1.1.1
