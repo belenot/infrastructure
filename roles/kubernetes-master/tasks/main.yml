@@ -7,14 +7,14 @@
 
 - name: Copy CA to /etc/kubernetes/pki/ca.crt.
   copy:
-    src: ca-cert.pem
+    src: ca/ca-cert.pem
     dest: /etc/kubernetes/pki/ca.crt
     mode: '644'
   become: yes
 
 - name: Copy CA key to /etc/kubernetes/pki/ca.key.
   copy:
-    src: ca-key.pem
+    src: ca/ca-key.pem
     dest: /etc/kubernetes/pki/ca.key
     mode: '600'
   become: yes
