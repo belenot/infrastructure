@@ -3,6 +3,11 @@
     url: 'https://www.getenvoy.io/gpg'
   become: yes
 
+- name: Upgrade cryptography pip package.
+  pip:
+    name: cryptography
+  become: yes
+
 - name: Add proxy apt repository.
   apt_repository:
     repo: deb [arch=amd64] https://dl.bintray.com/tetrate/getenvoy-deb {{ ansible_distribution_release }} stable
@@ -62,11 +67,54 @@
   loop: [ belenot.com, alpha ]
   become: yes
 
-- name: Copy alpha certificates.
+#- name: Copy alpha certificates.
+#  copy:
+#    src: '{{ item }}'
+#    dest: /etc/envoy/pki/alpha/{{ item }}
+#  loop: [ edge-cert.pem, edge-key.pem, ca-cert.pem ]
+#  become: yes
+
+- name: Create private key for edge certificate.
+  openssl_privatekey:
+    path: /etc/envoy/pki/alpha/edge-key.pem
+    backup: yes
+    mode: '600'
+  become: yes
+
+- name: Create scr for edge.
+  openssl_csr:
+    path: /etc/envoy/pki/alpha/edge-csr.pem
+    privatekey_path: /etc/envoy/pki/alpha/edge-key.pem
+    backup: yes
+    common_name: '*.belenot.com'
+    subject:
+      CN: '*.belenot.com'
+    subject_alt_name:
+    - 'DNS:*.belenot.com'
+  become: yes
+
+- name: Copy CA directory to host.
   copy:
-    src: '{{ item }}'
-    dest: /etc/envoy/pki/alpha/{{ item }}
-  loop: [ edge-cert.pem, edge-key.pem, ca-cert.pem ]
+    src: ca
+    dest: ~/
+  notify: delete ca directory
+
+- name: Copy CA to /etc/envoy/pki/alpha.
+  copy:
+    remote_src: yes
+    src: ca/ca-cert.pem
+    dest: /etc/envoy/pki/alpha/ca-cert.pem
+  become: yes
+
+
+- name: Sign certificate for edge.
+  openssl_certificate:
+    path: /etc/envoy/pki/alpha/edge-cert.pem
+    csr_path: /etc/envoy/pki/alpha/edge-csr.pem
+    provider: ownca
+    ownca_path: ca/ca-cert.pem
+    ownca_privatekey_path: ca/ca-key.pem
+    ownca_privatekey_passphrase: '{{ ca_passphrase }}'
   become: yes
 
 - name: Get certificate via ACME for belenot.com tasks.

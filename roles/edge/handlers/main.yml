@@ -1,5 +1,11 @@
+---
 - name: restart envoy
   service:
     name: envoy
     state: restarted
   become: yes
+
+- name: delete ca directory
+  file:
+    path: ca
+    state: absent

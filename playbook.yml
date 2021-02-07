@@ -37,3 +37,7 @@
 - hosts: nexus
   roles:
   - role: nexus
+
+- hosts: jenkins
+  roles:
+  - role: jenkins

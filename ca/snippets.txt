@@ -1,3 +1,0 @@
-openssl ca -config openssl.cnf -in ../openresty/local-edge-csr.pem -out local-edge-cert.pem -cert cacert.pem -passin file:/home/belenot/password1 -keyfile ca-key.pem -create_serial
-openssl req -out local-nexus-cert.pem -new -key nexus-key.pem -addext subjectAltName=IP:192.168.52.10,DNS:local-nexus,DNS:local-nexus:50000 -out local-nexus-csr.pem -passin file:/home/belenot/password1 -config ../ca/openssl.cnf 
-openssl genrsa -passout file:/home/belenot/password1 -aes256 -out nexus-key.pem
