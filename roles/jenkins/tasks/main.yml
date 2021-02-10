@@ -1,4 +1,11 @@
 ---
+- name: Create jenkins user.
+  user:
+    name: jenkins
+    create_home: yes
+    home: /home/jenkins
+  become: yes
+
 - name: Copy aws and ssh configs from {{ ansible_user }} to jenkins user.
   copy:
     remote_src: yes
@@ -13,14 +20,6 @@
   lineinfile:
     path: /etc/environment
     line: JENKINS_PUBLIC_URL={{ jenkins_public_url }}
-  become: yes
-
-- name: Create home directory for Jenkins.
-  user:
-    name: jenkins
-    #move_home: yes
-    create_home: yes
-    home: /home/jenkins
   become: yes
 
 - name: Create ~/.ssh directory.
