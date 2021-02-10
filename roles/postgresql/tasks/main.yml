@@ -1,9 +1,4 @@
-- name: Install pip packages.
-  pip:
-    name: 'psycopg2'
-    executable: /usr/bin/pip3
-  become: yes
-
+---
 - name: Create  user for postgresql.
   postgresql_user:
     name: '{{ item }}'

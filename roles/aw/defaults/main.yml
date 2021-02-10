@@ -1,6 +1,3 @@
 ---
 git_private_key: '{{ lookup(''file'', ''git_private_key'') }}'
 git_infrastructure_url: git@github.com:belenot/infrastructure.git
-pip_packages:
-- ansible
-- boto3

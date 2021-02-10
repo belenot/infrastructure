@@ -9,3 +9,5 @@ dependencies:
       - libssl-dev
       - libffi-dev
       - python3-dev
+      pip_packages:
+      - cryptography

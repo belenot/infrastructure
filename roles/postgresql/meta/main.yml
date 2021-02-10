@@ -22,3 +22,5 @@ dependencies:
       - libpq-dev
       - python-dev
       - python-setuptools
+      pip_packages:
+      - psycopg2

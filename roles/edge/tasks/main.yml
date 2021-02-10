@@ -3,11 +3,6 @@
     url: 'https://www.getenvoy.io/gpg'
   become: yes
 
-- name: Upgrade cryptography pip package.
-  pip:
-    name: cryptography
-  become: yes
-
 - name: Add proxy apt repository.
   apt_repository:
     repo: deb [arch=amd64] https://dl.bintray.com/tetrate/getenvoy-deb {{ ansible_distribution_release }} stable

@@ -29,3 +29,6 @@ dependencies:
       - kubectl
       - terraform
       - openjdk-8-jdk
+      pip_packages:
+      - ansible
+      - boto3

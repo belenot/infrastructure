@@ -64,3 +64,9 @@
     update_cache: yes
   loop: '{{ packages }}'
   become: yes
+
+- name: Install pip packages.
+  pip:
+    name: '{{ item }}'
+  loop: '{{ pip_packages }}'
+  become: yes

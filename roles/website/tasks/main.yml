@@ -1,9 +1,4 @@
 ---
-- name: Install required python packages.
-  pip:
-    name: '{{ item }}'
-  loop: [ lxml ]
-
 - name: Ensure website.jar doesn't exists.
   file:
     path: website/website.jar

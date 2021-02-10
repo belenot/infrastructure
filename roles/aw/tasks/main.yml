@@ -3,13 +3,6 @@
   register: lsb_release
   changed_when: False
 
-- name: Install pip packages.
-  pip: 
-    name: '{{ item }}'
-    executable: /usr/bin/pip3
-  loop: '{{ pip_packages }}'
-  become: yes
-
 - name: Change permissions on ~/.ssh folder.
   file:
     path: ~/.ssh

@@ -18,3 +18,5 @@ dependencies:
       - unzip
       - jq
       - openjdk-8-jdk
+      pip_packages:
+      - lxml
