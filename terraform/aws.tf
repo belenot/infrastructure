@@ -236,24 +236,6 @@ resource "aws_security_group" "edge" {
   }
 }
 
-resource "aws_instance" "dns" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.small"
-  vpc_security_group_ids      = [aws_security_group.alpha.id]
-  subnet_id                   = aws_subnet.subnet1.id
-  associate_public_ip_address = true
-  key_name                    = var.key_pair_name
-  private_ip                  = "172.31.2.11"
-  tags = {
-    type      = "dns"
-    generator = "terraform"
-  }
-
-  lifecycle {
-    ignore_changes = [associate_public_ip_address]
-  }
-}
-
 resource "aws_instance" "edge" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
@@ -270,119 +252,72 @@ resource "aws_instance" "edge" {
   }
 }
 
+resource "aws_spot_fleet_request" "fleet_requests" {
+  for_each = var.instances
+  iam_fleet_role              = data.aws_iam_role.fleet_role.arn
+  instance_interruption_behaviour = "stop"
+  terminate_instances_with_expiration = true
+  launch_specification {
+    ami                         = data.aws_ami.ubuntu.id
+    key_name                    = var.key_pair_name
+    subnet_id                   = aws_subnet.subnet1.id
 
+    instance_type               = each.value.instance_type
+    vpc_security_group_ids      = [aws_security_group.alpha.id]
+    associate_public_ip_address = each.value.associate_public_ip_address
+    tags = {
+      type      = each.key
+      generator = "terraform"
+    }
+  }
+  wait_for_fulfillment = true
 
-resource "aws_instance" "website" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
-  vpc_security_group_ids      = [aws_security_group.alpha.id]
-  subnet_id                   = aws_subnet.subnet1.id
-  associate_public_ip_address = true
-  key_name                    = var.key_pair_name
-  tags = {
-    type      = "website"
-    generator = "terraform"
-  }
-  lifecycle {
-    ignore_changes = [associate_public_ip_address]
-  }
+  target_capacity = 1
 }
 
-resource "aws_instance" "aw" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
-  vpc_security_group_ids      = [aws_security_group.alpha.id]
-  subnet_id                   = aws_subnet.subnet1.id
-  associate_public_ip_address = true
-  key_name                    = var.key_pair_name
-  tags = {
-    type      = "aw"
-    generator = "terraform"
+variable "instances" {
+  default = {
+    dns = {
+      instance_type               = "t2.small"
+      associate_public_ip_address = true
+      private_ip                  = "172.31.2.11"
+    }
+    nexus = {
+      instance_type               = "t2.medium"
+      associate_public_ip_address = true
+    }
+    jenkins = {
+      instance_type = "t2.medium"
+      associate_public_ip_address = true
+    }
+    kubernetes-worker-1 = {
+      instance_type               = "t2.medium"
+      associate_public_ip_address = true
+    }
+    kubernetes-worker-2 = {
+      instance_type               = "t2.medium"
+      associate_public_ip_address = true
+    }
+    kubernetes-master = {
+      instance_type               = "t2.medium"
+      associate_public_ip_address = true
+    }
+    postgresql = {
+      instance_type               = "t2.micro"
+      associate_public_ip_address = true
+    }
+    website = {
+      instance_type               = "t2.micro"
+      associate_public_ip_address = true
+    }
+    aw = {
+      instance_type               = "t2.micro"
+      associate_public_ip_address = true
+    }
   }
-  lifecycle {
-    ignore_changes = [associate_public_ip_address]
-  }
+
 }
 
-resource "aws_instance" "postgresql" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
-  vpc_security_group_ids      = [aws_security_group.alpha.id]
-  subnet_id                   = aws_subnet.subnet1.id
-  associate_public_ip_address = true
-  key_name                    = var.key_pair_name
-  tags = {
-    type      = "postgresql"
-    generator = "terraform"
-  }
-  lifecycle {
-    ignore_changes = [associate_public_ip_address]
-  }
-}
-
-resource "aws_instance" "kubernetes-master" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.medium"
-  vpc_security_group_ids      = [aws_security_group.alpha.id]
-  subnet_id                   = aws_subnet.subnet1.id
-  associate_public_ip_address = true
-  key_name                    = var.key_pair_name
-  tags = {
-    type      = "kubernetes-master"
-    generator = "terraform"
-  }
-  lifecycle {
-    ignore_changes = [associate_public_ip_address]
-  }
-}
-
-resource "aws_instance" "kubernetes-worker" {
-  count = 2
-
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.medium"
-  vpc_security_group_ids      = [aws_security_group.alpha.id]
-  subnet_id                   = aws_subnet.subnet1.id
-  associate_public_ip_address = true
-  key_name                    = var.key_pair_name
-
-  tags = {
-    type      = "kubernetes-worker"
-    generator = "terraform"
-  }
-  lifecycle {
-    ignore_changes = [associate_public_ip_address]
-  }
-}
-
-resource "aws_instance" "nexus" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.medium"
-  vpc_security_group_ids      = [aws_security_group.alpha.id]
-  subnet_id                   = aws_subnet.subnet1.id
-  associate_public_ip_address = true
-  key_name                    = var.key_pair_name
-  tags = {
-    type      = "nexus"
-    generator = "terraform"
-  }
-  lifecycle {
-    ignore_changes = [associate_public_ip_address]
-  }
-}
-
-resource "aws_instance" "jenkins" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.medium"
-  vpc_security_group_ids      = [aws_security_group.alpha.id]
-  subnet_id                   = aws_subnet.subnet1.id
-  associate_public_ip_address = true
-  key_name                    = var.key_pair_name
-  tags = {
-    type      = "jenkins"
-    generator = "terraform"
-  }
-  lifecycle {
-    ignore_changes = [associate_public_ip_address]
-  }
+data "aws_iam_role" "fleet_role" {
+  name = "aws-ec2-spot-fleet-tagging-role"
 }
