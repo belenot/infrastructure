@@ -5,18 +5,10 @@
     state: directory
   become: yes
 
-- name: Copy CA to /etc/kubernetes/pki/ca.crt.
+- name: Copy Alpha CA certificate for External CA mode for kubernetes.
   copy:
     src: ca/ca-cert.pem
-    dest: /etc/kubernetes/pki/ca.crt
-    mode: '644'
-  become: yes
-
-- name: Copy CA key to /etc/kubernetes/pki/ca.key.
-  copy:
-    src: ca/ca-key.pem
-    dest: /etc/kubernetes/pki/ca.key
-    mode: '600'
+    dest: /etc/kubernetes/pki
   become: yes
 
 - name: Check kubernetes wasn't initialized.
