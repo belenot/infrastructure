@@ -272,7 +272,7 @@ resource "aws_spot_fleet_request" "fleet_requests" {
   }
   wait_for_fulfillment = true
 
-  target_capacity = 1
+  target_capacity = each.value.target_capacity
 }
 
 variable "instances" {
@@ -280,40 +280,44 @@ variable "instances" {
     dns = {
       instance_type               = "t2.small"
       associate_public_ip_address = true
-      private_ip                  = "172.31.2.11"
+//      private_ip                  = "172.31.2.11"
+      target_capacity             = 1
     }
     nexus = {
       instance_type               = "t2.medium"
       associate_public_ip_address = true
+      target_capacity             = 1
     }
     jenkins = {
-      instance_type = "t2.medium"
-      associate_public_ip_address = true
-    }
-    kubernetes-worker-1 = {
       instance_type               = "t2.medium"
       associate_public_ip_address = true
+      target_capacity             = 1
     }
-    kubernetes-worker-2 = {
+    kubernetes-worker = {
       instance_type               = "t2.medium"
       associate_public_ip_address = true
+      target_capacity             = 2
     }
     kubernetes-master = {
       instance_type               = "t2.medium"
       associate_public_ip_address = true
+      target_capacity             = 1
     }
     postgresql = {
       instance_type               = "t2.micro"
       associate_public_ip_address = true
+      target_capacity             = 1
     }
     website = {
       instance_type               = "t2.micro"
       associate_public_ip_address = true
+      target_capacity             = 1
     }
-    aw = {
-      instance_type               = "t2.micro"
-      associate_public_ip_address = true
-    }
+//    aw = {
+//      instance_type               = "t2.micro"
+//      associate_public_ip_address = true
+//      target_capacity             = 1
+//    }
   }
 
 }
