@@ -4,6 +4,15 @@ all:
     ansible_python_interpreter: /usr/bin/python3
 #    istio_version: 1.4.6
     local: true
+    domain_names:
+      ns:
+      - 192.168.50.10
+      node-0.k8s:
+      - 192.168.50.10
+      node-1.k8s:
+      - 192.168.50.11
+      node-2.k8s:
+      - 192.168.50.12
   children:
     kubernetes:
       children:
@@ -35,64 +44,3 @@ all:
               ansible_ssh_private_key_file: .vagrant/machines/node-3/virtualbox/private_key
               ansible_port: 2203
               ansible_ssh_host: 127.0.0.1
-  hosts:
-    edge:
-      ansible_user: vagrant
-      ansible_ssh_private_key_file: .vagrant/machines/edge/virtualbox/private_key
-      ansible_port: 2204
-      ansible_ssh_host: 127.0.0.1
-    aw:
-      ansible_user: vagrant
-      ansible_ssh_private_key_file: .vagrant/machines/aw/virtualbox/private_key
-      ansible_port: 2205
-      ansible_ssh_host: 127.0.0.1
-    dns:
-      ansible_user: vagrant
-      ansible_ssh_private_key_file: .vagrant/machines/dns/virtualbox/private_key
-      ansible_port: 2206
-      ansible_ssh_host: 127.0.0.1
-      domain_names:
-        ns:
-        - 192.168.54.10
-        edge:
-        - 192.168.53.10
-        aw:
-        - 192.168.51.10
-        node-0.k8s:
-        - 192.168.50.10
-        node-1.k8s:
-        - 192.168.50.11
-        node-2.k8s:
-        - 192.168.50.12
-        postgresql:
-        - 192.168.56.10
-        website:
-        - 192.168.55.10
-        nexus:
-        - 192.168.57.10
-        jenkins:
-        - 192.168.58.10
-    website:
-      ansible_user: vagrant
-      ansible_ssh_private_key_file: .vagrant/machines/website/virtualbox/private_key
-      ansible_port: 2207
-      ansible_ssh_host: 127.0.0.1
-      maven_repo_username: admin
-      maven_repo_password: nexus_password
-    postgresql:
-      ansible_user: vagrant
-      ansible_ssh_private_key_file: .vagrant/machines/postgresql/virtualbox/private_key
-      ansible_port: 2208
-      ansible_ssh_host: 127.0.0.1
-    nexus:
-      ansible_user: vagrant
-      ansible_ssh_private_key_file: .vagrant/machines/nexus/virtualbox/private_key
-      ansible_port: 2209
-      ansible_ssh_host: 127.0.0.1
-      vault_nexus_admin_password: nexus_password
-    jenkins:
-      ansible_user: vagrant
-      ansible_ssh_private_key_file: .vagrant/machines/jenkins/virtualbox/private_key
-      ansible_port: 2210
-      ansible_ssh_host: 127.0.0.1
-      jenkins_public_url: https://belenot.com:8080 # Edge address

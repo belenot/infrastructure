@@ -68,7 +68,8 @@ data "aws_ami" "ubuntu" {
 //}
 
 resource "aws_eip_association" "edge_eip_association"{
-  instance_id = aws_instance.edge.id
+//  instance_id = aws_instance.edge.id
+  instance_id = aws_spot_fleet_request.fleet_requests.id
   allocation_id = data.aws_eip.edge_eip.id
 }
 
@@ -236,22 +237,6 @@ resource "aws_security_group" "edge" {
   }
 }
 
-resource "aws_instance" "edge" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
-  vpc_security_group_ids      = [aws_security_group.edge.id]
-  subnet_id                   = aws_subnet.subnet1.id
-//  associate_public_ip_address = true
-  key_name                    = var.key_pair_name
-  tags = {
-    type      = "edge"
-    generator = "terraform"
-  }
-  lifecycle {
-    ignore_changes = [associate_public_ip_address]
-  }
-}
-
 resource "aws_spot_fleet_request" "fleet_requests" {
   for_each = var.instances
   iam_fleet_role              = data.aws_iam_role.fleet_role.arn
@@ -277,22 +262,6 @@ resource "aws_spot_fleet_request" "fleet_requests" {
 
 variable "instances" {
   default = {
-    dns = {
-      instance_type               = "t2.small"
-      associate_public_ip_address = true
-//      private_ip                  = "172.31.2.11"
-      target_capacity             = 1
-    }
-    nexus = {
-      instance_type               = "t2.medium"
-      associate_public_ip_address = true
-      target_capacity             = 1
-    }
-    jenkins = {
-      instance_type               = "t2.medium"
-      associate_public_ip_address = true
-      target_capacity             = 1
-    }
     kubernetes-worker = {
       instance_type               = "t2.medium"
       associate_public_ip_address = true
@@ -303,21 +272,6 @@ variable "instances" {
       associate_public_ip_address = true
       target_capacity             = 1
     }
-    postgresql = {
-      instance_type               = "t2.micro"
-      associate_public_ip_address = true
-      target_capacity             = 1
-    }
-    website = {
-      instance_type               = "t2.micro"
-      associate_public_ip_address = true
-      target_capacity             = 1
-    }
-//    aw = {
-//      instance_type               = "t2.micro"
-//      associate_public_ip_address = true
-//      target_capacity             = 1
-//    }
   }
 
 }

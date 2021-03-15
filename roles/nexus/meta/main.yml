@@ -1,9 +1,0 @@
-dependencies:
-- role: base
-  packages:
-  - acl
-- role: sansible.nexus
-  become: yes
-#  allow_world_readable_tmpfiles: true
-  vars:
-    sansible_nexus_configuration_admin_password: '{{ vault_nexus_admin_password }}'

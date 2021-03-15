@@ -1,18 +1,8 @@
 ---
-- hosts: dns
+- hosts: kubernetes-master
   roles:
   - role: dns
   tags: dns
-
-- hosts: aw
-  roles:
-  - role: aw
-  tags: aw
-
-- hosts: edge
-  roles:
-  - role: edge
-  tags: edge
 
 - hosts: kubernetes-master
   roles:
@@ -31,23 +21,3 @@
   - role: kubernetes-istio
   - role: kubernetes-ambassador
   tags: kubernetes
-
-- hosts: website
-  roles:
-  - role: website
-  tags: website
-
-- hosts: postgresql
-  roles:
-  - role: postgresql
-  tags: postgresql
-
-- hosts: nexus
-  roles:
-  - role: nexus
-  tags: nexus
-
-- hosts: jenkins
-  roles:
-  - role: jenkins
-  tags: jenkins

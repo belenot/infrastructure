@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 import boto3, sys, json, getopt, socket
 
-types = ['dns', 'edge', 'aw', 'kubernetes-master', 'kubernetes-worker', 'website', 'postgresql', 'nexus', 'jenkins']
+types = ['kubernetes-master', 'kubernetes-worker']
 
 def main(argv):
     opts = dict(getopt.getopt(argv[1:], 'h', ['list', 'start', 'stop', 'help'])[0])
