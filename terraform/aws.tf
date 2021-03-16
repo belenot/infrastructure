@@ -45,6 +45,10 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+data "aws_iam_role" "fleet_role" {
+  name = "aws-ec2-spot-fleet-tagging-role"
+}
+
 // Created S3 Bucket initially, but after that used as datasource
 //resource "aws_s3_bucket" "state_bucket" {
 //  bucket = "state-bucket.belenot.com"
@@ -67,9 +71,21 @@ data "aws_ami" "ubuntu" {
 //  }
 //}
 
-resource "aws_eip_association" "edge_eip_association"{
+data "aws_instance" "kubernetes_master" {
+  depends_on    = ["aws_spot_fleet_request.kubernetes_master"]
+  filter {
+    name = "tag:type"
+    values = ["kubernetes-master"]
+  }
+  filter {
+    name = "instance-state-name"
+    values = ["pending", "running"]
+  }
+}
+
+resource "aws_eip_association" "edge_eip_association" {
 //  instance_id = aws_instance.edge.id
-  instance_id = aws_spot_fleet_request.fleet_requests.id
+  instance_id = data.aws_instance.kubernetes_master.id
   allocation_id = data.aws_eip.edge_eip.id
 }
 
@@ -204,30 +220,6 @@ resource "aws_security_group" "edge" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 8081
-    protocol    = "tcp"
-    to_port     = 8081
-    description = "Nexus UI."
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 5000
-    protocol    = "tcp"
-    to_port     = 5000
-    description = "Nexus docker registry."
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8080
-    protocol    = "tcp"
-    to_port     = 8080
-    description = "Jenkins."
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port   = 0
     protocol    = "-1"
@@ -237,45 +229,42 @@ resource "aws_security_group" "edge" {
   }
 }
 
-resource "aws_spot_fleet_request" "fleet_requests" {
-  for_each = var.instances
-  iam_fleet_role              = data.aws_iam_role.fleet_role.arn
-  instance_interruption_behaviour = "stop"
+resource "aws_spot_fleet_request" "kubernetes_master" {
+  iam_fleet_role                      = data.aws_iam_role.fleet_role.arn
+  instance_interruption_behaviour     = "stop"
   terminate_instances_with_expiration = true
+  target_capacity                     = 1
+  wait_for_fulfillment                = true
   launch_specification {
     ami                         = data.aws_ami.ubuntu.id
     key_name                    = var.key_pair_name
     subnet_id                   = aws_subnet.subnet1.id
-
-    instance_type               = each.value.instance_type
-    vpc_security_group_ids      = [aws_security_group.alpha.id]
-    associate_public_ip_address = each.value.associate_public_ip_address
+    instance_type               = "t2.medium"
+    vpc_security_group_ids      = [aws_security_group.alpha.id, aws_security_group.edge.id]
+    associate_public_ip_address = false
     tags = {
-      type      = each.key
+      type      = "kubernetes-master"
       generator = "terraform"
     }
   }
-  wait_for_fulfillment = true
-
-  target_capacity = each.value.target_capacity
 }
 
-variable "instances" {
-  default = {
-    kubernetes-worker = {
-      instance_type               = "t2.medium"
-      associate_public_ip_address = true
-      target_capacity             = 2
-    }
-    kubernetes-master = {
-      instance_type               = "t2.medium"
-      associate_public_ip_address = true
-      target_capacity             = 1
+resource "aws_spot_fleet_request" "kubernetes_worker" {
+  iam_fleet_role                      = data.aws_iam_role.fleet_role.arn
+  instance_interruption_behaviour     = "stop"
+  terminate_instances_with_expiration = true
+  target_capacity                     = 2
+  wait_for_fulfillment                = true
+  launch_specification {
+    ami                         = data.aws_ami.ubuntu.id
+    key_name                    = var.key_pair_name
+    subnet_id                   = aws_subnet.subnet1.id
+    instance_type               = "t2.medium"
+    vpc_security_group_ids      = [aws_security_group.alpha.id]
+    associate_public_ip_address = true
+    tags = {
+      type      = "kubernetes-worker"
+      generator = "terraform"
     }
   }
-
-}
-
-data "aws_iam_role" "fleet_role" {
-  name = "aws-ec2-spot-fleet-tagging-role"
 }
