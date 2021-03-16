@@ -6,18 +6,35 @@
 
 - hosts: kubernetes-master
   roles:
+  - role: edge
+  tags: edge
+
+- hosts: kubernetes-master
+  roles:
   - role: kubernetes-base
   - role: kubernetes-master
-  tags: kubernetes
+  tags:
+  - kubernetes
+  - kubernetes-master
 
 - hosts: kubernetes-worker
   roles:
   - role: kubernetes-base
   - role: kubernetes-worker
-  tags: kubernetes
+  tags:
+  - kubernetes
+  - kubernetes-master
 
 - hosts: kubernetes-master
   roles:
   - role: kubernetes-istio
+  tags:
+  - kubernetes
+  - kubernetes-istio
+
+- hosts: kubernetes-master
+  roles:
   - role: kubernetes-ambassador
-  tags: kubernetes
+  tags:
+  - kubernetes
+  - kubernetes-ambassador

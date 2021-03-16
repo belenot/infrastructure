@@ -1,5 +1,5 @@
 ---
-nameserver_ip: 192.168.54.10
+nameserver_ip: 192.168.50.10
 set_nameserver: true
 apt_repositories: []
 packages: []

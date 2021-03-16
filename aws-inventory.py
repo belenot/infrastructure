@@ -54,33 +54,24 @@ def inventory_list():
             if tag['Key'] == 'type' and tag['Value'] in ['kubernetes-worker', 'kubernetes-master'] and instance.state['Name'] == 'running':
                 inventory['_meta']['hostvars'][instance.public_ip_address]['node_ip'] = instance.private_ip_address
 
-    if len(inventory['dns']['hosts']) > 0:
-        hosts = [host for group in inventory if group not in ['_meta', 'dns'] for host in inventory[group]['hosts']]
+    if len(inventory['kubernetes-master']['hosts']) > 0:
+        hosts = [host for group in inventory if group not in ['_meta'] for host in inventory[group]['hosts']]
         for host in hosts:
-            nameserver_ip = instances_by_type(instances, 'dns')[0].private_ip_address
+            nameserver_ip = instances_by_type(instances, 'kubernetes-master')[0].private_ip_address
             vars = inventory['_meta']['hostvars'][host]
             vars['set_nameserver'] = True
             vars['nameserver_ip'] = nameserver_ip
 
-        inventory['dns']['vars'] = {'domain_names': {}}
-        domain_names = inventory['dns']['vars']['domain_names']
-        domain_names['ns'] = [ x.private_ip_address for x in instances_by_type(instances, 'dns') ]
-        domain_names['edge'] = [ x.private_ip_address for x in instances_by_type(instances, 'edge') ]
-        domain_names['aw'] = [ x.private_ip_address for x in instances_by_type(instances, 'aw') ]
+        inventory['kubernetes-master']['vars'] = {'domain_names': {}}
+        domain_names = inventory['kubernetes-master']['vars']['domain_names']
+        domain_names['ns'] = [ x.private_ip_address for x in instances_by_type(instances, 'kubernetes-master') ]
         domain_names['node-0.k8s'] = [x.private_ip_address for x in instances_by_type(instances, 'kubernetes-master')]
-        domain_names['website'] = [x.private_ip_address for x in instances_by_type(instances, 'website')]
-        domain_names['postgresql'] = [x.private_ip_address for x in instances_by_type(instances, 'postgresql')]
-        domain_names['jenkins'] = [x.private_ip_address for x in instances_by_type(instances, 'jenkins')]
         kubernetes_workers = [ x.private_ip_address for x in instances_by_type(instances, 'kubernetes-worker') ]
         for i in range(0, len(kubernetes_workers)):
             domain_names['node-'+str(i+1)+'.k8s'] = [ kubernetes_workers[i] ]
-        domain_names['nexus'] = [ x.private_ip_address for x in instances_by_type(instances, 'nexus') ]
 
 
-    inventory['edge']['vars']['ignore_acme'] = False
-    inventory['nexus']['vars']['vault_nexus_admin_password'] = 'nexus_password'
-    inventory['website']['vars']['maven_repo_username'] = 'admin'
-    inventory['website']['vars']['maven_repo_password'] = 'nexus_password'
+    inventory['kubernetes-master']['vars']['ignore_acme'] = False
 
     return inventory
 
