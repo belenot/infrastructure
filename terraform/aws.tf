@@ -16,6 +16,19 @@ variable "key_pair_name" {
   default = "belenot"
 }
 
+variable "instance_capacity" {
+  default = {
+    fleet_instances = {
+      master = 1
+      worker = 3
+    }
+    spot_instances = {
+      master = 0
+      worker = 0
+    }
+  }
+}
+
 data "aws_eip" "edge_eip" {
   tags = {
     type = "edge"
@@ -72,7 +85,7 @@ data "aws_iam_role" "fleet_role" {
 //}
 
 data "aws_instance" "kubernetes_master" {
-  depends_on    = ["aws_spot_fleet_request.kubernetes_master"]
+  depends_on    = [ aws_spot_fleet_request.kubernetes_master ]
   filter {
     name = "tag:type"
     values = ["kubernetes-master"]
@@ -233,7 +246,7 @@ resource "aws_spot_fleet_request" "kubernetes_master" {
   iam_fleet_role                      = data.aws_iam_role.fleet_role.arn
   instance_interruption_behaviour     = "stop"
   terminate_instances_with_expiration = true
-  target_capacity                     = 1
+  target_capacity                     = var.instance_capacity.fleet_instances.master
   wait_for_fulfillment                = true
   launch_specification {
     ami                         = data.aws_ami.ubuntu.id
@@ -253,7 +266,7 @@ resource "aws_spot_fleet_request" "kubernetes_worker" {
   iam_fleet_role                      = data.aws_iam_role.fleet_role.arn
   instance_interruption_behaviour     = "stop"
   terminate_instances_with_expiration = true
-  target_capacity                     = 2
+  target_capacity                     = var.instance_capacity.fleet_instances.worker
   wait_for_fulfillment                = true
   launch_specification {
     ami                         = data.aws_ami.ubuntu.id
@@ -266,5 +279,39 @@ resource "aws_spot_fleet_request" "kubernetes_worker" {
       type      = "kubernetes-worker"
       generator = "terraform"
     }
+  }
+}
+
+resource "aws_instance" "kubernetes_master" {
+  count = var.instance_capacity.spot_instances.master
+  ami                         = data.aws_ami.ubuntu.id
+  key_name                    = var.key_pair_name
+  subnet_id                   = aws_subnet.subnet1.id
+  instance_type               = "t2.medium"
+  vpc_security_group_ids      = [aws_security_group.alpha.id, aws_security_group.edge.id]
+  associate_public_ip_address = false # Because there is Elastic IP Assotiation with kubernetes_master
+  tags = {
+    type      = "kubernetes-master"
+    generator = "terraform"
+  }
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
+  }
+}
+
+resource "aws_instance" "kubernetes_worker" {
+  count = var.instance_capacity.spot_instances.worker
+  ami                         = data.aws_ami.ubuntu.id
+  key_name                    = var.key_pair_name
+  subnet_id                   = aws_subnet.subnet1.id
+  instance_type               = "t2.medium"
+  vpc_security_group_ids      = [aws_security_group.alpha.id]
+  associate_public_ip_address = true
+  tags = {
+    type      = "kubernetes-worker"
+    generator = "terraform"
+  }
+  lifecycle {
+    ignore_changes = [associate_public_ip_address]
   }
 }
