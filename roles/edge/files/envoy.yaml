@@ -59,9 +59,9 @@ static_resources:
             validation_context: {}
             tls_certificates:
             - certificate_chain:
-                filename: /etc/envoy/pki/alpha/edge-cert.pem
+                filename: /etc/envoy/pki/belenot.com/edge-cert.pem
               private_key:
-                filename: /etc/envoy/pki/alpha/edge-key.pem
+                filename: /etc/envoy/pki/belenot.com/edge-key.pem
   clusters:
   - name: kubernetes_api_server
     connect_timeout: 30s
