@@ -38,3 +38,10 @@
   tags:
   - kubernetes
   - kubernetes-ambassador
+
+- hosts: kubernetes-master
+  roles:
+  - role: kubernetes-dashboard
+  tags:
+  - kubernetes
+  - kubernetes-dashboard

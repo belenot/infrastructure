@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: getambassador.io/v2
+  kind: Mapping
+  metadata:
+    name: kubernetes-dashboard
+    namespace: kubernetes-dashboard
+  spec:
+    host: kubernetes-dashboard.belenot.com
+    prefix: /
+    service: https://kubernetes-dashboard.kubernetes-dashboard
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: kubernetes-dashboard-admin
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+  subjects:
+  - kind: ServiceAccount
+    name: kubernetes-dashboard
+    namespace: kubernetes-dashboard
