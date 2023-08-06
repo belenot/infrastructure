@@ -1,17 +1,19 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-IMAGE_NAME = "ubuntu/xenial64"
+IMAGE_NAME = "ubuntu/focal64"
 KUBERNETES_WORKERS = 3
+ENV['VAGRANT_SERVER_URL'] = 'https://vagrant.elab.pro'
+
 
 Vagrant.configure("2") do |config|
 
+    # config.vm.box_download_insecure = true
     config.vm.box = IMAGE_NAME
     config.vm.provider "virtualbox" do |v|
         v.memory = 2048
         v.cpus = 4
     end
-
     config.vm.define "k8s-master" do |master|
         master.vm.network "private_network", ip: "192.168.50.10"
         master.vm.hostname = "k8s-master"
@@ -76,5 +78,14 @@ Vagrant.configure("2") do |config|
         end
         postgresql.vm.network "private_network", ip: "192.168.56.10"
         postgresql.vm.network "forwarded_port", guest: 22, host: 2208, id: "ssh"
+    end
+    
+    config.vm.define "wedding-site" do |website|
+        website.vm.provider "virtualbox" do |vb|
+            vb.memory = "1024"
+            vb.cpus = 2
+        end
+        website.vm.network "private_network", ip: "192.168.57.10"
+        website.vm.network "forwarded_port", guest: 22, host: 2209, id: "ssh"
     end
 end

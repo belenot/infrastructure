@@ -32,3 +32,7 @@
 - hosts: postgresql
   roles:
   - role: postgresql
+
+- hosts: wedding-site
+  roles:
+  - role: wedding-site

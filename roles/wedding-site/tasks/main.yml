@@ -1,0 +1,26 @@
+---
+- name: Install git private key.
+  copy: 
+    src: git_private_key
+    dest: ~/.ssh/id_rsa
+    mode: '600'
+
+- name: Install nginx package.
+  apt:
+    name: nginx
+    state: latest
+  become: true
+
+- name: Fetch infrastructure git repository.
+  git:
+    repo: '{{ git_wedding_site_url }}'
+    dest: /tmp/wedding-site
+    force: yes
+    accept_hostkey: yes
+
+- name: Copy wedding site to /var/www/html
+  copy:
+    src: /tmp/wedding-site/
+    dest: /var/www/html
+    remote_src: true
+  become: true

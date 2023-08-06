@@ -76,3 +76,12 @@ all:
       ansible_ssh_private_key_file: .vagrant/machines/postgresql/virtualbox/private_key
       ansible_port: 2208
       ansible_ssh_host: 127.0.0.1
+    wedding-site:
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: .vagrant/machines/wedding-site/virtualbox/private_key
+      ansible_port: 2209
+      ansible_ssh_host: 127.0.0.1
+      nginx_user: www-data
+      worker_processes: auto
+      worker_connections: 2048
+      client_max_body_size: 512M
