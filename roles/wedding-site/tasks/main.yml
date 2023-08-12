@@ -18,9 +18,26 @@
     force: yes
     accept_hostkey: yes
 
+- name: Install dependencies for wedding-site
+  command: 
+    cmd: 'npm install'
+    chdir: /tmp/wedding-site
+
+- name: Build wedding-site
+  command: 
+    cmd: 'npm run build'
+    chdir: /tmp/wedding-site
+
+# - name: Copy wedding site to /var/www/html
+#   copy:
+#     src: /tmp/wedding-site/
+#     dest: /var/www/html
+#     remote_src: true
+#   become: true
+
 - name: Copy wedding site to /var/www/html
   copy:
-    src: /tmp/wedding-site/
+    src: /tmp/wedding-site/dist/
     dest: /var/www/html
     remote_src: true
   become: true

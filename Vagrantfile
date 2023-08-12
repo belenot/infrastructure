@@ -87,5 +87,6 @@ Vagrant.configure("2") do |config|
         end
         website.vm.network "private_network", ip: "192.168.57.10"
         website.vm.network "forwarded_port", guest: 22, host: 2209, id: "ssh"
+        website.vm.network "forwarded_port", guest: 80, host: 8080, id: "http"
     end
 end

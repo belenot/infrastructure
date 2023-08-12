@@ -16,4 +16,4 @@ dependencies:
       - zip
       - unzip
       - jq
-      - nodejs
+  - role: nodejs-base
