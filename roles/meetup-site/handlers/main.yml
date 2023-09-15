@@ -1,0 +1,12 @@
+---
+- name: restart meetup-backend
+  service:
+    name: meetup-backend
+    state: restarted
+  become: true
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+  become: true

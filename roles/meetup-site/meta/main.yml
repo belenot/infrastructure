@@ -1,0 +1,19 @@
+---
+dependencies:
+  - role: base
+    vars:
+      apt_repositories:
+      - key: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+        repository: deb https://deb.nodesource.com/node_14.x {{ ansible_distribution_release }} main
+      packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+      - python3-pip
+      - git
+      - zip
+      - unzip
+      - jq
+  - role: nodejs-base

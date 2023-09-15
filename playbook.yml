@@ -36,3 +36,7 @@
 - hosts: wedding-site
   roles:
   - role: wedding-site
+
+- hosts: meetup-site
+  roles:
+  - role: meetup-site

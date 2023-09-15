@@ -1,0 +1,89 @@
+---
+- name: Install git private key.
+  copy: 
+    src: git_private_key
+    dest: ~/.ssh/id_rsa
+    mode: '600'
+
+- name: Install nginx package.
+  apt:
+    name: nginx
+    state: latest
+  become: true
+
+- name: Make directories
+  file:
+    path: /opt/{{ item }}
+    state: directory
+    mode: '755'
+    owner: '{{ ansible_user }}'
+  with_items: 
+  - meetup-backend
+  - meetup-frontend
+  become: true
+
+- name: Fetch infrastructure(frontend) git repository.
+  git:
+    repo: '{{ git_meetup_frontend_site_url }}'
+    dest: /opt/meetup-frontend
+    force: yes
+    accept_hostkey: yes
+
+- name: Fetch infrastructure(backend) git repository.
+  git:
+    repo: '{{ git_meetup_backend_site_url }}'
+    dest: /opt/meetup-backend
+    force: yes
+    accept_hostkey: yes
+
+- name: Install dependencies for meetup-frontend
+  command: 
+    cmd: 'npm install'
+    chdir: /opt/meetup-frontend
+
+- name: Install openjdk-17
+  apt:
+    name: openjdk-17-jdk
+    state: latest
+  become: true
+
+- name: Build meetup-frontend
+  command: 
+    cmd: 'npm run build'
+    chdir: /opt/meetup-frontend
+
+- name: Build meetup-backend
+  shell:
+    cmd: './gradlew --no-daemon clean shadowJar'
+    chdir: /opt/meetup-backend
+
+- name: Copy shadow jar
+  copy:
+    src: /opt/meetup-backend/build/libs/meetup-0.1-MVP-all.jar 
+    dest: /opt/
+    remote_src: true
+    mode: '755'
+  become: true
+  notify: restart meetup-backend
+
+- name: Copy meetup-backend.service to /etc/systemd/system
+  copy:
+    src: meetup-backend.service
+    dest: /etc/systemd/system
+    mode: '754'
+  become: true
+  notify: restart meetup-backend
+
+- name: Copy meetup site to /var/www/html
+  copy:
+    src: /opt/meetup-frontend/dist/
+    dest: /var/www/html
+    remote_src: true
+  become: true
+
+- name: Copy nging default conf
+  copy:
+    src: default-nginx.conf
+    dest: /etc/nginx/sites-available/default
+  become: true
+  notify: restart nginx

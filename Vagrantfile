@@ -89,4 +89,14 @@ Vagrant.configure("2") do |config|
         website.vm.network "forwarded_port", guest: 22, host: 2209, id: "ssh"
         website.vm.network "forwarded_port", guest: 80, host: 8080, id: "http"
     end
+
+    config.vm.define "meetup-site" do |meetup|
+        meetup.vm.provider "virtualbox" do |vb|
+            vb.memory = "1024"
+            vb.cpus = 2
+        end
+        meetup.vm.network "private_network", ip: "192.168.58.10"
+        meetup.vm.network "forwarded_port", guest: 22, host: 2210, id: "ssh"
+        meetup.vm.network "forwarded_port", guest: 80, host: 8080, id: "http"
+    end
 end
