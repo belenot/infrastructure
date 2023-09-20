@@ -17,3 +17,11 @@ dependencies:
       - unzip
       - jq
   - role: nodejs-base
+  # - role: geerlingguy.certbot ### TODO automate it
+  #   vars:
+  #     certbot_testmode: true
+  #     certbot_certs: 
+  #       # - email: kholhunov0@gmail.com
+  #         # webroot: "/var/www/html/"
+  #         domains:
+  #           - meet-up.fun
