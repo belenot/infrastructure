@@ -1,42 +1,54 @@
 ---
 - hosts: dns
+  ignore_unreachable: true
   roles:
   - role: dns
 
 - hosts: aw
+  ignore_unreachable: true
   roles:
   - role: aw
 
 - hosts: edge
+  ignore_unreachable: true
   roles:
   - role: edge
 
 - hosts: kubernetes-master
+  ignore_unreachable: true
   roles:
   - role: kubernetes-base
   - role: kubernetes-master
 
 - hosts: kubernetes-worker
+  ignore_unreachable: true
   roles:
   - role: kubernetes-base
   - role: kubernetes-worker
 
 - hosts: kubernetes-master
+  ignore_unreachable: true
   roles:
   - role: kubernetes-istio
 
 - hosts: website
+  ignore_unreachable: true
   roles:
   - role: website
 
 - hosts: postgresql
+  ignore_unreachable: true
   roles:
   - role: postgresql
 
 - hosts: wedding-site
+  ignore_unreachable: true
   roles:
   - role: wedding-site
 
 - hosts: meetup-site
+  ignore_unreachable: true
   roles:
   - role: meetup-site
+    tags:
+      - meetup-site

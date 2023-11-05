@@ -5,6 +5,8 @@ dependencies:
       apt_repositories:
       - key: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
         repository: deb https://deb.nodesource.com/node_14.x {{ ansible_distribution_release }} main
+      - key: https://download.docker.com/linux/ubuntu/gpg
+        repository: deb https://download.docker.com/linux/ubuntu focal stable
       packages:
       - apt-transport-https
       - ca-certificates
@@ -16,7 +18,12 @@ dependencies:
       - zip
       - unzip
       - jq
+      - nginx
+      - docker-ce
+      pip_packages:
+        - docker
   - role: nodejs-base
+  - role: liquibase-base
   # - role: geerlingguy.certbot ### TODO automate it
   #   vars:
   #     certbot_testmode: true

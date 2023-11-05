@@ -1,0 +1,19 @@
+---
+- name: Install dependencies for meetup-frontend
+  command:
+    cmd: 'npm install'
+    chdir: /opt/meetup-frontend
+
+- name: Build meetup-frontend
+  command:
+    cmd: 'npm run build'
+    chdir: /opt/meetup-frontend
+
+- name: Copy meetup site to /var/www/html
+  copy:
+    src: /opt/meetup-frontend/dist/
+    dest: /var/www/html
+    remote_src: true
+  become: true
+  notify:
+    - restart nginx

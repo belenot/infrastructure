@@ -1,7 +1,7 @@
 [Unit]
-Description=Meetup Java Backend Server
+Description=Meetup Database Server
 [Service]
-ExecStart=java -jar /opt/meetup-backend/build/libs/meetup-0.1-MVP-all.jar
+ExecStart=docker start meetup-postgres
 Restart=always
 RestartSec=5
 KillMode=mixed
@@ -9,4 +9,4 @@ SyslogIdentifier=envoy
 LimitNOFILE=640000
 [Install]
 WantedBy=multi-user.target
-Required=meetup-database
+Required=docker.service

@@ -92,7 +92,7 @@ Vagrant.configure("2") do |config|
 
     config.vm.define "meetup-site" do |meetup|
         meetup.vm.provider "virtualbox" do |vb|
-            vb.memory = "1024"
+            vb.memory = "2048" # If set 1024 then gradle would fail
             vb.cpus = 2
         end
         meetup.vm.network "private_network", ip: "192.168.58.10"

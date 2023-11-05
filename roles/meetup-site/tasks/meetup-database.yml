@@ -1,0 +1,43 @@
+---
+- name: Create directory for meetup-database-init
+  file:
+    state: directory
+    path: /opt/var/meetup-database-init
+    owner: '{{ ansible_user }}'
+  become: true
+
+
+- name: Copy sql script to meetup-database-init
+  copy:
+    src: init.sql
+    dest: /opt/var/meetup-database-init
+
+- name: Install postgres docker container
+  docker_container:
+    name: meetup-postgres
+    state: started
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - /opt/var/meetup-database:/var/lib/postgresql/data
+      - /opt/var/meetup-database-init:/docker-entrypoint-initdb.d
+    env:
+      POSTGRES_USER: '{{ meetup_site.database.username }}'
+      POSTGRES_PASSWORD: '{{ meetup_site.database.password }}'
+  become: true # todo
+
+- name: Copy meetup-database.service to /etc/systemd/system
+  copy:
+    src: meetup-database.service
+    dest: /etc/systemd/system
+    mode: '754'
+  become: true
+  notify:
+    - restart meetup-database
+
+- name: Enabled meetup-database
+  service:
+    name: meetup-database
+    enabled: true
+  become: true

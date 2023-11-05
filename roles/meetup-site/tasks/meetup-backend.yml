@@ -1,0 +1,49 @@
+---
+- name: Install openjdk-17
+  apt:
+    name: openjdk-17-jdk
+    state: latest
+  become: true
+
+- name: Build meetup-backend
+  shell:
+    cmd: './gradlew --no-daemon clean shadowJar'
+    chdir: /opt/meetup-backend
+  become_user: '{{ ansible_user }}'
+  environment:
+    JAVA_HOME: "/usr/lib/jvm/java-1.17.0-openjdk-amd64"
+
+- name: Template liquibase.conf to meetup backend
+  template:
+    src: liquibase.properties
+    dest: /opt/meetup-backend/liquibase.properties
+
+- name: Run liquibase
+  shell:
+    cmd: 'liquibase update --changelog-file {{ meetup_site.database.changelog_file }}'
+    chdir: "/opt/meetup-backend"
+
+- name: Copy shadow jar
+  copy:
+    src: /opt/meetup-backend/build/libs/meetup-0.1-MVP-all.jar
+    dest: /opt/
+    remote_src: true
+    mode: '755'
+  become: true
+  notify: restart meetup-backend
+
+- name: Copy meetup-backend.service to /etc/systemd/system
+  copy:
+    src: meetup-backend.service
+    dest: /etc/systemd/system
+    mode: '754'
+  become: true
+  notify:
+    - restart meetup-backend
+    - restart nginx
+
+- name: Enabled meetup-backend.service
+  service:
+    name: meetup-backend
+    enabled: true
+  become: true
