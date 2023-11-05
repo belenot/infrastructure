@@ -23,3 +23,5 @@ password
 !/terraform/aws.tf
 !/infrastructure.jpg
 !/README.md
+!/firstvds-inventory.yaml
+!/yandex-inventory.yaml
