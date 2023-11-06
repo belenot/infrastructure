@@ -7,6 +7,8 @@ dependencies:
         repository: deb https://deb.nodesource.com/node_14.x {{ ansible_distribution_release }} main
       - key: https://download.docker.com/linux/ubuntu/gpg
         repository: deb https://download.docker.com/linux/ubuntu focal stable
+      - key: https://repo.liquibase.com/liquibase.asc
+        repository: deb https://repo.liquibase.com stable main
       packages:
       - apt-transport-https
       - ca-certificates
@@ -20,10 +22,10 @@ dependencies:
       - jq
       - nginx
       - docker-ce
+      - liquibase
       pip_packages:
         - docker
   - role: nodejs-base
-  - role: liquibase-base
   # - role: geerlingguy.certbot ### TODO automate it
   #   vars:
   #     certbot_testmode: true

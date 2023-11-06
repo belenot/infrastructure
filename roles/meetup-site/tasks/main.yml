@@ -56,9 +56,9 @@
 
 
 - name: Copy nginx default conf
-  copy:
+  template:
     src: default-nginx.conf
     dest: /etc/nginx/sites-available/default
   become: true
   notify: restart nginx
-  when: template_nginx_conf
+  when: template_nginx_conf | bool

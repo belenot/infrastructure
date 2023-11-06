@@ -1,6 +1,7 @@
 ---
 git_meetup_frontend_site_url: git@github.com:belenot/meeting-site.git
 git_meetup_backend_site_url: git@github.com:belenot/meetup-backend.git
+install_mode: prod
 meetup_site:
   database:
     url: jdbc:postgresql://localhost:5432/meetup

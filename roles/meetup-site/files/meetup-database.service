@@ -1,7 +1,7 @@
 [Unit]
 Description=Meetup Database Server
 [Service]
-ExecStart=docker start meetup-postgres
+ExecStart=docker start -a meetup-postgres
 Restart=always
 RestartSec=5
 KillMode=mixed

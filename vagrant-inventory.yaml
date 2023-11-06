@@ -96,3 +96,4 @@ all:
       worker_connections: 2048
       client_max_body_size: 512M
       template_nginx_conf: true
+      install_mode: dev
